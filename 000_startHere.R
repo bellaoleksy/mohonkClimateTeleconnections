@@ -27,7 +27,7 @@ source('Analysis2_LakeTrends.R')
 #Mixing action analysis####
 #Includes ARIMA models for mixing action (manuscript figure 4)
 #as well as Figure S8 (teleconnection time series)
-source('Analysis3_MixingActionDrivers.R')
+source('Analysis3_MixingActionsDrivers.R')
 
 
 #Mixing action and temperature profiles methods check####

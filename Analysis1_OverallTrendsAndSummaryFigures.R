@@ -632,7 +632,7 @@ rm(AnnualData.SensSlopeSummary,
    segment_data)
 
 rm(list = ls()[grep("gg.", ls())])
-rm(list = ls()[grep("DailyInterpol", ls())])
+# rm(list = ls()[grep("DailyInterpol", ls())])
 rm(list = ls()[grep("temp", ls())])
 rm(list = ls()[grep("tmp", ls())])
 rm(list = ls()[grep("Stability", ls())])    
