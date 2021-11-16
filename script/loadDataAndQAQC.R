@@ -8,11 +8,11 @@ library(lubridate)
 library(ggplot2) 
 
 #Read in Bathymetry Data----------------------------------------------------####
-MohonkBathy<-read.csv('data/keep/mohonkAreaBathymetry.csv', fill = TRUE)
+MohonkBathy<-read.csv('data/mohonkAreaBathymetry.csv', fill = TRUE)
 
 #Read Seasonal NAO indices----------------------------------------------------####
 #Read in data
-NAO_daily<-read.csv("data/keep/NAO_index_daily.csv")
+NAO_daily<-read.csv("data/NAO_index_daily.csv")
 
 #Make date column
 NAO_daily$Date <- paste(NAO_daily$Year, NAO_daily$Month, NAO_daily$Day, sep="-") %>%
@@ -28,7 +28,7 @@ NAO_daily<-NAO_daily %>%
 # ENSO_monthly<-read.csv("data/ONI_index_monthly.csv")
 
 ##Upload Mohonk NOAA National Weather Service Temp and Precip daily data####
-MohonkDailyWeather.upload<-read.csv("data/keep/MohonkPreserveWeatherData-1985-2017-NOAA-NCEI.csv", fill = TRUE)
+MohonkDailyWeather.upload<-read.csv("data/MohonkPreserveWeatherData-1985-2017-NOAA-NCEI.csv", fill = TRUE)
 MohonkDailyWeather.upload$Date<-as.Date(as.character(MohonkDailyWeather.upload$DATE))
 MohonkDailyWeather.upload$Precip_mm<-MohonkDailyWeather.upload$PRCP_in*25.4
 MohonkDailyWeather.upload$Snow_mm<-MohonkDailyWeather.upload$SNOW_in*25.4
@@ -48,15 +48,15 @@ MohonkDailyWeather<-MohonkDailyWeather.upload[,c("Date","Precip_mm","Snow_mm",
 ####Source: ENSO (MEI v2) - 1979 to present, monthly
 ####https://psl.noaa.gov/data/climateindices/
 #Read in data
-ENSO_MEI_monthly<-read.csv("data/keep/ENSO_MEI_1979-2020.csv")
+ENSO_MEI_monthly<-read.csv("data/ENSO_MEI_1979-2020.csv")
 
 #Read in data
-ENSO_monthly<-read.csv("data/keep/ONI_index_monthly.csv")
+ENSO_monthly<-read.csv("data/ONI_index_monthly.csv")
 
 
 ##Upload Mohonk FULL RECORD NOAA National Weather Service Temp and Precip daily data ####   
 #2020-12-01 IAO downloaded wx data going back to 1930
-MohonkDailyWeatherFull.upload<-read.csv("data/keep/MohonkPreserveWeatherData-1930-2020-NOAA-NCEI.csv", fill = TRUE) 
+MohonkDailyWeatherFull.upload<-read.csv("data/MohonkPreserveWeatherData-1930-2020-NOAA-NCEI.csv", fill = TRUE) 
 head(MohonkDailyWeatherFull.upload)
 MohonkDailyWeatherFull.upload$Date<-as.Date(as.character(MohonkDailyWeatherFull.upload$DATE))
 MohonkDailyWeatherFull.upload$Precip_mm<-MohonkDailyWeatherFull.upload$PRCP*25.4 #convert to mm
@@ -74,7 +74,7 @@ MohonkDailyWeatherFull<-MohonkDailyWeatherFull.upload[,c("Date","Precip_mm","Sno
 
 
 ##Upload Mohonk Ice on and Ice off data####    
-MohonkIce.upload<-read.csv("data/keep/MohonkLake-IceOnIceOff-1932-2017.csv", fill = TRUE) 
+MohonkIce.upload<-read.csv("data/MohonkLake-IceOnIceOff-1932-2017.csv", fill = TRUE) 
 MohonkIce.upload$Year<-seq(1932,2019,by=1) #Corrected the script to include 2019
 
 
