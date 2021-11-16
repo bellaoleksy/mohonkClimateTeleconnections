@@ -27,7 +27,7 @@ library(lubridate)
 
 
 
-# Interpolations workflow -------------------------------------------------
+# (1) Interpolations workflow ------------------------------------------------------
 
 
 
@@ -66,9 +66,6 @@ MohonkWeeklyProfilesMetric.derivedData<-MohonkWeeklyProfilesMetric.derivedData[M
 
 # Create new data frame based on complete years
 MohonkWeeklyProfilesMetric.derivedData.fullYears<-MohonkWeeklyProfilesMetric.derivedData      
-
-#Remove years with missing data (1997,2014)
-  #MohonkWeeklyProfilesMetric.derivedData.fullYears<-MohonkWeeklyProfilesMetric.derivedData.fullYears[MohonkWeeklyProfilesMetric.derivedData.fullYears$year!=1997&MohonkWeeklyProfilesMetric.derivedData.fullYears$year!=2014,]
 
 #Generate vector of years available         
 YearAvail<-as.numeric(levels(factor(MohonkWeeklyProfilesMetric.derivedData.fullYears$year)))
@@ -141,7 +138,8 @@ DailyInterpol$HypoTemp_degC<-rowMeans(DailyInterpol[,c("Temp_10m","Temp_11m","Te
 #Create a data frame that gets the proportion of volume at each depth
   cx <- c(0,cumsum(MohonkBathy$SurfaceAreaAtThatDepth_m2))
 #Upper depth
-MohonkBathy.volume<-data.frame(UpperDepth_m=MohonkBathy$Depth_m_LowerLimit[seq(1,(length(MohonkBathy$Depth_m_LowerLimit)-1))],LowerDepth_m=MohonkBathy$Depth_m_LowerLimit[seq(2,length(MohonkBathy$Depth_m_LowerLimit))])
+MohonkBathy.volume<-data.frame(UpperDepth_m=MohonkBathy$Depth_m_LowerLimit[seq(1,(length(MohonkBathy$Depth_m_LowerLimit)-1))],
+                               LowerDepth_m=MohonkBathy$Depth_m_LowerLimit[seq(2,length(MohonkBathy$Depth_m_LowerLimit))])
 MohonkBathy.volume$MeanArea_m2<-(cx[(2+1):length(cx)] - cx[1:(length(cx) - 2)]) / 2
 MohonkBathy.volume$Volume_m3<-MohonkBathy.volume$MeanArea_m2*1
 MohonkBathy.volume$Volume_proportion<-MohonkBathy.volume$Volume_m3/sum(MohonkBathy.volume$Volume_m3)
@@ -173,7 +171,6 @@ for(index.l in 1:length(DailyInterpol$Date)){
 #Or 2 (leap year, 366 days) in the 53rd week.  Just lump those values with 52nd week    
 DailyInterpol$weekofyear<-(DailyInterpol$dayofyear-1)%/%7 +1
 DailyInterpol$weekofyear[DailyInterpol$weekofyear==53]<-52
-#max(DailyInterpol$weekofyear)
 
 #*Create a difference between surface and bottom temperature on a daily scale
 DailyInterpol<-DailyInterpol%>%mutate(DeltaSurfaceDeep_degC=EpiTemp_degC-HypoTemp_degC)
@@ -181,7 +178,7 @@ DailyInterpol<-DailyInterpol%>%mutate(DeltaSurfaceDeep_degC=EpiTemp_degC-HypoTem
 
 
 
-#Create AnnualData df####         
+# (2) Create AnnualData df ----------------------------------------------------------
 #Create a vector of all the years in the thermister data frame
 #Create a blank vector for the maximum stability
 AnnualData<-as.data.frame(matrix(ncol=1,nrow=length(as.numeric(levels(factor(DailyInterpol$year))))))
@@ -189,13 +186,12 @@ names(AnnualData)<-c("Year")
 #Redo year because interpolation missed some and created NAs
 AnnualData$Year<-as.numeric(levels(factor(DailyInterpol$year)))
 
-
 #Merge AnnualData with IceOff and ice length data
 AnnualData<-left_join(AnnualData,MohonkIcePost1985%>%dplyr::select(Year,IceOutDayofYear,LengthOfIceCover_days),by=c("Year"))
 
-#*Also include the ice on date that ends the open water season
-#Have to clear out the first row and then reset years by 1 to frame around the open water season.
-#If the ice on date is small - that means it ended in the following year and just put 366+the ice in day - the most it went to was a month into the following year
+# Also include the ice on date that ends the open water season
+# Have to clear out the first row and then reset years by 1 to frame around the open water season.
+# If the ice on date is small - that means it ended in the following year and just put 366+the ice in day - the most it went to was a month into the following year
 AnnualData<-left_join(AnnualData,MohonkIcePost1985%>%
                         filter(Year>1985)%>%
                         dplyr::select(Year,IceInDayofYear)%>%
@@ -204,19 +200,18 @@ AnnualData<-left_join(AnnualData,MohonkIcePost1985%>%
   filter(!Year=="2019")
 ##TEMPORAILY GET RID OF 2019. Seems to be giving issue with calculating MA because of NA for 'IceInDayOfYear'
 
-#Stability cutoff for defining stratified period - in units of J/m2
-#*Calculate stability cutoff
-  #Method 1 to determine cutoff - get the median of each dayOfYear, pettitt.test on the median composite stability
+# Stability cutoff for defining stratified period - in units of J/m2------------
+# Calculate stability cutoff
+  # Method 1 to determine cutoff - get the median of each dayOfYear, pettitt.test on the median composite stability
   medianCompositeStability<-DailyInterpol%>%
     dplyr::select(dayofyear,stability_Jperm2)%>%
     group_by(dayofyear)%>%
     summarize(MedianStability_Jperm2=median(stability_Jperm2,na.rm=TRUE))
   #Breakpoint analysis
   Stability.cutoff1<-medianCompositeStability$MedianStability_Jperm2[pettitt.test(medianCompositeStability$MedianStability_Jperm2)$estimate]
-  #plot(medianCompositeStability$MedianStability_Jperm2~medianCompositeStability$dayofyear)
-  #abline(h=Stability.cutoff1)
+
   
-  #**Methood 2 to determine cutoff - get the cutoff each year and take the median of those
+  # Methood 2 to determine cutoff - get the cutoff each year and take the median of those
   AnnualBreakpoint.method2<-DailyInterpol%>%
     mutate(Year=year(Date))%>%
     dplyr::select(Year, dayofyear, stability_Jperm2)%>%
@@ -226,7 +221,7 @@ AnnualData<-left_join(AnnualData,MohonkIcePost1985%>%
   #hist(temp$AnnualBreakpoint)
   Stability.cutoff2<-median(AnnualBreakpoint.method2$AnnualBreakpoint)
 
-  #**Method 3 to determine cutoff - get the cutoff each fall and take the median of those
+  # Method 3 to determine cutoff - get the cutoff each fall and take the median of those
   #Cut at day 230 which is after the peak, can play around with this number
   AnnualBreakpoint.method3<-DailyInterpol%>%
     filter(dayofyear>=240)%>%
@@ -239,10 +234,10 @@ AnnualData<-left_join(AnnualData,MohonkIcePost1985%>%
   #Median of both method from spring and fall
   median(c(AnnualBreakpoint.method2$AnnualBreakpoint,AnnualBreakpoint.method3$AnnualBreakpoint)) #Take the median
   
-  #**set the stability cutoff equal to the second method - but there was consistency between the two
+  # set the stability cutoff equal to the second method - but there was consistency between the two
   Stability.cutoff<-Stability.cutoff2
 
-#**Initialize some columns in the AnnualData DF
+# Initialize some columns in the AnnualData DF
   AnnualData$MaxStability_Jperm2<-NA
   AnnualData$DayMaxStability<-NA
   AnnualData$AUC.Stability_Jperm2day<-NA
@@ -274,7 +269,7 @@ AnnualData<-left_join(AnnualData,MohonkIcePost1985%>%
   AnnualData$DeltaSurfaceDeepTemp_slope_degCpDay<-NA
   AnnualData$DeltaSurfaceDeepTemp_intercept_degC<-NA
   
-#*Get the area under the curve for the stability FOR each year
+# Get the area under the curve for the stability FOR each year------------------
   #k<-31 for debugging
 for(k in 1:length(AnnualData$Year)){
   year.tmp<-AnnualData$Year[k]
@@ -290,20 +285,13 @@ for(k in 1:length(AnnualData$Year)){
   StartOpenWater_doy<-AnnualData$IceOutDayofYear[AnnualData$Year==year.tmp]
   EndOpenWater_doy<-AnnualData$IceInDayofYear[AnnualData$Year==year.tmp]
   
-  #plot(stability.tmp~dayofyear.tmp,main=paste("Year=",year.tmp,sep=""),xlim=c(0,365),ylim=c(0,610))
-  #Blue line is 10
-  #abline(h=Stability.cutoff,col="blue")
-  #REd lines are start and end of stratification
-  #abline(v=dayofyear.tmp[min(which(stability.tmp>Stability.cutoff))],col="red")
-  #abline(v=dayofyear.tmp[max(which(stability.tmp>Stability.cutoff))],col="red")
-  
   #Exclude 1997 because of the paucity of data
   if(year.tmp==1997){}else{
     AnnualData$MaxStability_Jperm2[k]<-max(stability.tmp,na.rm=TRUE)
     AnnualData$DayMaxStability[k]<-dayofyear.tmp[which.max(stability.tmp)]
     }
   
-  #**Calculations of the total stratified stability
+  #Calculations of the total stratified stability
   #Area under the curve for first time above cutoff from above to first time below
   #Exclude 1984,1997,2014 because of incomplete curves
   if(year.tmp==1984|year.tmp==1997|year.tmp==2014){}else{
@@ -347,27 +335,45 @@ for(k in 1:length(AnnualData$Year)){
   AnnualData$DeepWaterTemp_Summer_degC[k]<-mean(as.matrix(bottom101112.tmp[dayofyear.tmp>=172&dayofyear.tmp<=264,]),na.rm=T)
   #**Calculate the average from start to end of stratification for each year
   #Use StartOfStratification_Day and EndOfStratification_Day
-  AnnualData$SurfaceWaterTemp_StratifiedPeriod_degC[k]<-mean(as.matrix(top123temp.tmp[dayofyear.tmp>=AnnualData$StartOfStratification_Day[k]&dayofyear.tmp<=AnnualData$EndOfStratification_Day[k],]),na.rm=T)
-  AnnualData$DeepWaterTemp_StratifiedPeriod_degC[k]<-mean(as.matrix(bottom101112.tmp[dayofyear.tmp>=AnnualData$StartOfStratification_Day[k]&dayofyear.tmp<=AnnualData$EndOfStratification_Day[k],]),na.rm=T)
+  AnnualData$SurfaceWaterTemp_StratifiedPeriod_degC[k]<-mean(as.matrix(top123temp.tmp[dayofyear.tmp>=AnnualData$StartOfStratification_Day[k]&
+                                                                                        dayofyear.tmp<=AnnualData$EndOfStratification_Day[k],]),
+                                                             na.rm=T)
+  AnnualData$DeepWaterTemp_StratifiedPeriod_degC[k]<-mean(as.matrix(bottom101112.tmp[dayofyear.tmp>=AnnualData$StartOfStratification_Day[k]&
+                                                                                       dayofyear.tmp<=AnnualData$EndOfStratification_Day[k],]),
+                                                          na.rm=T)
   #**Calculate the average for spring (21Mar to 21Jun) for each year
   #Day 80 to <172 (to avoid overlap with summer)
-  AnnualData$SurfaceWaterTemp_Spring_degC[k]<-mean(as.matrix(top123temp.tmp[dayofyear.tmp>=80&dayofyear.tmp<172,]),na.rm=T)
-  AnnualData$DeepWaterTemp_Spring_degC[k]<-mean(as.matrix(bottom101112.tmp[dayofyear.tmp>=80&dayofyear.tmp<172,]),na.rm=T)
+  AnnualData$SurfaceWaterTemp_Spring_degC[k]<-mean(as.matrix(top123temp.tmp[dayofyear.tmp>=80&
+                                                                              dayofyear.tmp<172,]),
+                                                   na.rm=T)
+  AnnualData$DeepWaterTemp_Spring_degC[k]<-mean(as.matrix(bottom101112.tmp[dayofyear.tmp>=80&
+                                                                             dayofyear.tmp<172,]),
+                                                na.rm=T)
   
   #**Calculate the average for spring mixed period for each year
   #Use ice off (IceOutDayofYear) to StartOfStratification_Day
-  AnnualData$SurfaceWaterTemp_SpringMixed_degC[k]<-mean(as.matrix(top123temp.tmp[dayofyear.tmp>=AnnualData$IceOutDayofYear[k]&dayofyear.tmp<AnnualData$StartOfStratification_Day[k],]),na.rm=T)
-  AnnualData$DeepWaterTemp_SpringMixed_degC[k]<-mean(as.matrix(bottom101112.tmp[dayofyear.tmp>=AnnualData$IceOutDayofYear[k]&dayofyear.tmp<AnnualData$StartOfStratification_Day[k],]),na.rm=T)
+  AnnualData$SurfaceWaterTemp_SpringMixed_degC[k]<-mean(as.matrix(top123temp.tmp[dayofyear.tmp>=AnnualData$IceOutDayofYear[k]&
+                                                                                   dayofyear.tmp<AnnualData$StartOfStratification_Day[k],]),
+                                                        na.rm=T)
+  AnnualData$DeepWaterTemp_SpringMixed_degC[k]<-mean(as.matrix(bottom101112.tmp[dayofyear.tmp>=AnnualData$IceOutDayofYear[k]&
+                                                                                  dayofyear.tmp<AnnualData$StartOfStratification_Day[k],]),
+                                                     na.rm=T)
   
   #**Calculate the average for spring mixed post ice period for each year
   #Use ice off (IceOutDayofYear) to +7 days
-  AnnualData$SurfaceWaterTemp_SpringPostIce_degC[k]<-mean(as.matrix(top123temp.tmp[dayofyear.tmp>AnnualData$IceOutDayofYear[k]&dayofyear.tmp<=AnnualData$IceOutDayofYear[k]+7,]),na.rm=T)
-  AnnualData$DeepWaterTemp_SpringPostIce_degC[k]<-mean(as.matrix(bottom101112.tmp[dayofyear.tmp>AnnualData$IceOutDayofYear[k]&dayofyear.tmp<=AnnualData$IceOutDayofYear[k]+7,]),na.rm=T)
+  AnnualData$SurfaceWaterTemp_SpringPostIce_degC[k]<-mean(as.matrix(top123temp.tmp[dayofyear.tmp>AnnualData$IceOutDayofYear[k]&
+                                                                                     dayofyear.tmp<=AnnualData$IceOutDayofYear[k]+7,]),
+                                                          na.rm=T)
+  AnnualData$DeepWaterTemp_SpringPostIce_degC[k]<-mean(as.matrix(bottom101112.tmp[dayofyear.tmp>AnnualData$IceOutDayofYear[k]&
+                                                                                    dayofyear.tmp<=AnnualData$IceOutDayofYear[k]+7,]),
+                                                       na.rm=T)
   
   #**Caclulate the slope of the delta temperature for each year
   #Use ice off (IceOutDayofYear) to StartOfStratification_Day
-    deltaSpringMix<-deltaSurfaceDeep.tmp[dayofyear.tmp>=AnnualData$IceOutDayofYear[k]&dayofyear.tmp<AnnualData$StartOfStratification_Day[k]]
-    dayofYearSpringMix<-dayofyear.tmp[dayofyear.tmp>=AnnualData$IceOutDayofYear[k]&dayofyear.tmp<AnnualData$StartOfStratification_Day[k]]
+    deltaSpringMix<-deltaSurfaceDeep.tmp[dayofyear.tmp>=AnnualData$IceOutDayofYear[k]&
+                                           dayofyear.tmp<AnnualData$StartOfStratification_Day[k]]
+    dayofYearSpringMix<-dayofyear.tmp[dayofyear.tmp>=AnnualData$IceOutDayofYear[k]&
+                                        dayofyear.tmp<AnnualData$StartOfStratification_Day[k]]
     #Exclude 1997, 2014 because of the paucity of data, 2015 has stratification date happen before ice off day
     if(year.tmp==1997|year.tmp==2014|year.tmp==2015){}else{
     lm.deltaSpringMix<-summary(lm(deltaSpringMix~dayofYearSpringMix))
@@ -377,10 +383,10 @@ for(k in 1:length(AnnualData$Year)){
   }
 #End of for loop through the years
 
-#Determine the day of peak stratification
+# Determine the day of peak stratification -------------------------------------
 AnnualData$DateMaxStability<-as.Date(AnnualData$DayMaxStability, origin=as.Date(paste(AnnualData$Year,"-01-01",sep="")))
 
-#**Calculate the average from the surface (1-3m) and hypolimnion (10-12m) for that peak stratification day
+# Calculate the average from the surface (1-3m) and hypolimnion (10-12m) for that peak stratification day
 temp.Annualmeans<-as.data.frame(matrix(ncol=1,nrow=sum(!is.na(AnnualData$DateMaxStability))))
 names(temp.Annualmeans)<-c("Year")
 temp.Annualmeans$Year<-AnnualData$Year[!is.na(AnnualData$DateMaxStability)]
@@ -395,7 +401,8 @@ AnnualData<-merge(AnnualData,temp.Annualmeans,by="Year",all.x=T)
 AnnualData$MixingAction_gigaJday<-AnnualData$AUC.Stability_Jperm2day*69000/(10^9)
 AnnualData$MixingAction.OpenWater_gigaJday<-AnnualData$AUC.Stability.openwater_Jperm2day*69000/(10^9)
 
-#*Summarize NAO data####
+# (3) Summarize NAO data -------------------------------------------------------
+#Daily NAO indices were downloaded from the National Weather Service Climate Prediction Center (National Weather Service, 2020)
 # * "spring" mean (21 March to 21 June, DOY 81 - 172)
 # * mean of spring and summer (21 March to 21 Sept, DOY 81 - 265)
 # * spring through MA period (DOY 81 through.... end of stratification DOY)
@@ -452,33 +459,15 @@ NAO_summary <- left_join(NAO_springmean, NAO_summermean, by="Year")
 NAO_summary <- left_join(NAO_summary, NAO_stratifiedperiod, by="Year")
 NAO_summary <- left_join(NAO_summary, NAO_springmixed, by="Year")
 
-# 
-# # NAO dataframe 1950-present ----------------------------------------------
-# 
-# NAO_full<- NAO_daily %>%
-#   mutate(
-#     season= 
-#       ifelse(Month %in% c(10, 11, 12, 1, 2), "winter", 
-#              ifelse(Month %in% c(3, 4), "spring", 
-#                     ifelse(Month %in% c(5, 6, 7, 8), "summer", "fall"))),
-#     water_year = ifelse(season%in%c("winter","spring") &
-#                           Month %in% c("10","11","12","1","2","3","4"),
-#                         Year-1, 
-#                         Year)) %>% #this water_year term is only relevent for winter
-#                                     #metrics. We want 1 Oct-30 April to all correspond to the same water year
-#   group_by(water_year, season) %>%
-#   summarize(NAO_index=mean(NAO_index)) %>%
-#   filter(season%in%c("winter","spring")) %>% #where winter is [1oct-28feb]  & spring is [1march-30april] 
-#   pivot_wider(names_from="season",
-#               names_sep="_",
-#               values_from = "NAO_index") %>%
-#   rename(NAO_index_spring=spring,
-#          NAO_index_winter=winter) %>%
-#   ungroup() %>%
-#   mutate(Year=water_year+1)
-  
+rm(NAO_springmean,
+   NAO_stratifiedperiod,
+   NAO_springmixed,
+   NAO_daily,
+   NAO_summermean)
 
-#**Seasonal ENSO indices ----------------------------------------------------
+# (4) Summarize seasonal ENSO indices ------------------------------------------
+# We obtained monthly multivariate El Niño/Southern Oscillation (ENSO) indices from the
+# National Oceanic and Atmospheric Administration Physical Sciences Laboratory (NOAA Physical Sciences Laboratory, 2020). 
 
 #Summarizing ENSO data slightly different from NAO since we only have monthly times steps: 
 # * spring mean (april + may + june)
@@ -519,11 +508,13 @@ ENSO_summer <- ENSO_seasonal %>%
 ENSO_summary <- left_join(ENSO_spring,ENSO_summer, by="Year" )
 
 
-#***Merge with AnnualData by Year####
+
+# Merge with AnnualData by Year
 AnnualData<-left_join(AnnualData,NAO_summary,by=c("Year"))
 AnnualData<-left_join(AnnualData,ENSO_summary,by=c("Year"))
 
-#**Seasonal ENSO- MEI indices ----------------------------------------------------
+
+# Additional seasonal ENSO- MEI indices
 
 #Summarizing ENSO data slightly different from NAO since we only have monthly times steps:
 # * spring mean (april + may + june)
@@ -582,28 +573,25 @@ ENSO_MEI_summary <- left_join(ENSO_MEI_spring,ENSO_MEI_summer, by="Year" )
 ENSO_MEI_summary <- left_join(ENSO_MEI_summary,ENSO_MEI_winter, by="Year")
 
 
-#***Merge with AnnualData by Year####
+# Merge with AnnualData by Year
 AnnualData<-left_join(AnnualData,ENSO_MEI_summary,by=c("Year"))
 
-##quick QAQC- how do  ENSO and ENSO_MEI compare?
-# ggplot(AnnualData, aes(x=ENSO_Spring.x,y=ENSO_MEI_Spring))+geom_point()
-# ggplot(AnnualData, aes(x=ENSO_Summer.x,y=ENSO_MEI_Summer))+geom_point()
-#Yes they are highly correlated.
+rm(list = ls()[grep("ENSO_", ls())])   
 
 
-# * Load NOAA annual temperature anomoly ----------------------------------
+# (5) Fetch NOAA annual temperature anomoly ------------------------------------
 #Pulled from: https://www.ncdc.noaa.gov/monitoring-references/faq/anomalies.php#anomalies
 #Specs: Time scale = Annual
 #       Region = Global
 #       Surface = Land and Ocean
 NOAA_anomoly<-read.csv("data/keep/NOAA_globaltempanomoly.csv") %>%
   rename(GlobalTempAnomoly_C=Value)
-#* Merge temp anom. with AnnualData by Year####
+#* Merge temp anom. with AnnualData by Year
 AnnualData<-left_join(AnnualData,NOAA_anomoly,by=c("Year"))
 
-#Daily Interpolate Secchi####
-#There are several repeated days - some are NA for both duplicates, other have two secchi readings
-#Remove those duplicated values by averaging the secchi values
+# (6) Daily Interpolate Secchi -------------------------------------------------
+# There are several repeated days - some are NA for both duplicates, other have two secchi readings
+# Remove those duplicated values by averaging the secchi values
 MohonkWeeklySecchi<-MohonkWeeklyProfilesMetric%>%
   dplyr::select(Date, Secchi_m) %>%
   group_by(Date)%>%
@@ -630,7 +618,7 @@ DailyInterpol.secchi<-DailyInterpol.secchi%>%
   mutate(Year=year(Date))
 
 #*Secchi to annual summary
-  #**Add in columns for all the important dates#### 
+  #**Add in columns for all the important dates
     #Create day of year
     #Get the start spring start of summer and end of summer - those are set for each year
     #merge with AnnualData to get IceOff, start and end of stratification in there for each year
@@ -676,7 +664,7 @@ DailyInterpol.secchi<-DailyInterpol.secchi%>%
   #**Merge with AnnualData
   AnnualData<-left_join(AnnualData,AnnualData_volWtMeansPeriods,by="Year")
   
-#*Air temperature to annual summary####
+#*Air temperature to annual summary
   #**Truncate to the correct data size (1985-2017)
   MohonkDailyWeatherTruncate<-MohonkDailyWeather%>%
     filter(Date>=min(DailyInterpol$Date))
@@ -769,16 +757,10 @@ DailyInterpol.secchi<-DailyInterpol.secchi%>%
      MohonkWeeklyProfilesMetric.derivedData,
      MohonkWeeklyProfilesMetric.derivedData.fullYears,
      MohonkWeeklySecchi,
-     s.slope)
+     s.slope,
+     NOAA_anomoly)
 
   rm(list = ls()[grep("gg.", ls())])
   rm(list = ls()[grep("temp", ls())])
   rm(list = ls()[grep("lm", ls())])
   rm(list = ls()[grep("tmp.", ls())])  
-
-  
-  #Delete all values
-  # rm(list = ls.str(mode = 'numeric'))
-  # rm(list = ls.str(mode = 'character'))
-  
-  
