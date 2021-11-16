@@ -16,6 +16,7 @@ source('script/dataMunging.R')
 #Run the first analysis ####
 #Export manuanalyses figures 1-2 and figure S9 from this file
 source('Analysis1_OverallTrendsAndSummaryFigures.R')
+ 
 
 #Lake trend analysis####
 #Includes PCA on variables that influence surface and hypolimnion temperatures. 

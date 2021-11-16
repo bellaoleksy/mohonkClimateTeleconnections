@@ -478,6 +478,42 @@ ggsave("figures/manuscript/Figure2.StabilityFourPanels.pdf", plot=fig3, width=6.
 
 
 #Figure S9: Composite thermocline depth and stability figure vs. day of year summarizing over all years####
+tmp.composite<-aggregate(DailyInterpol$stability_Jperm2,
+                         by=list(DailyInterpol$dayofyear),
+                         FUN=quantile,na.rm=T)
+
+tmp2.composite<-aggregate(DailyInterpol$stability_Jperm2,
+                          by = list(DailyInterpol$dayofyear),
+                          FUN = function(x) quantile(x, probs = c(0.05,0.95),na.rm=T))
+
+Stability.composite<-data.frame(dayofyear=tmp.composite$Group.1,
+                                Min.stability_Jperm2=tmp.composite[["x"]][,1],
+                                Fifth.stability_Jperm2=tmp2.composite[["x"]][,1],
+                                TwentyFifth.stability_Jperm2=tmp.composite[["x"]][,2],
+                                Median.stability_Jperm2=tmp.composite[["x"]][,3],
+                                SeventyFifth.stability_Jperm2=tmp.composite[["x"]][,4],
+                                NinetyFifth.stability_Jperm2=tmp2.composite[["x"]][,2],
+                                Max.stability_Jperm2=tmp.composite[["x"]][,5])  
+
+#Do the same for thermocline depth
+tmp.composite<-aggregate(DailyInterpol$thermoclineDepth_m_thresh0.1,
+                         by=list(DailyInterpol$dayofyear),
+                         FUN=quantile,
+                         na.rm=T)
+
+tmp2.composite<-aggregate(DailyInterpol$thermoclineDepth_m_thresh0.1,
+                          by = list(DailyInterpol$dayofyear),
+                          FUN = function(x) quantile(x, probs = c(0.05,0.95),
+                                                     na.rm=T))
+
+ThermoclineDepth.composite<-data.frame(dayofyear=tmp.composite$Group.1,
+                                       Min.thermoclineDepth_m_thresh0.1=tmp.composite[["x"]][,1],
+                                       Fifth.thermoclineDepth_m_thresh0.1=tmp2.composite[["x"]][,1],
+                                       TwentyFifth.thermoclineDepth_m_thresh0.1=tmp.composite[["x"]][,2],
+                                       Median.thermoclineDepth_m_thresh0.1=tmp.composite[["x"]][,3],
+                                       SeventyFifth.thermoclineDepth_m_thresh0.1=tmp.composite[["x"]][,4],
+                                       NinetyFifth.thermoclineDepth_m_thresh0.1=tmp2.composite[["x"]][,2],
+                                       Max.thermoclineDepth_m_thresh0.1=tmp.composite[["x"]][,5])  
 
 #Cutoff at these days, before 75, the median is all 0.5; after 321, there is a linear increase to 1 by about 0.4 per day
 #Day 321 is about the maximum median thermocline depth - probably representing mixing of the top 
@@ -588,5 +624,6 @@ print(gg.2panel.composite)
 
 #Export as a jpg
 ggsave("figures/supplementary/figureS9.StabilityCompositeFigure.jpg",plot=gg.2panel.composite, width = 3.3, height = 4.2, units = "in",dpi = 300)
+
 
 
