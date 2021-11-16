@@ -5,7 +5,7 @@
 # Figure S3. Comparison of daily average sensor data to manual profiles --------
 
 ##Upload 2017 data
-MohonkWeeklyProfiles2017<-read.csv("data/2017_MohonkLake_Secchi_Thermistor.csv", fill = TRUE)  
+MohonkWeeklyProfiles2017<-read.csv("data/keep/2017_MohonkLake_Secchi_Thermistor.csv", fill = TRUE)  
 MohonkWeeklyProfiles2017Metric<-MohonkWeeklyProfiles2017
 
 #Convert to temperature in C

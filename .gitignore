@@ -26,7 +26,5 @@ vignettes/*.pdf
 *.knit.md
 # R Environment Variables
 .Renviron
-#Exclude any data
-/data
 #Ignore DS_Store!
 .DS_Store

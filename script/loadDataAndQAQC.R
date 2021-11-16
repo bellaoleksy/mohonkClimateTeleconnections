@@ -28,7 +28,7 @@ NAO_daily<-NAO_daily %>%
 # ENSO_monthly<-read.csv("data/ONI_index_monthly.csv")
 
 ##Upload Mohonk NOAA National Weather Service Temp and Precip daily data####
-MohonkDailyWeather.upload<-read.csv("data/MohonkPreserveWeatherData-1985-2017-NOAA-NCEI.csv", fill = TRUE)
+MohonkDailyWeather.upload<-read.csv("data/keep/MohonkPreserveWeatherData-1985-2017-NOAA-NCEI.csv", fill = TRUE)
 MohonkDailyWeather.upload$Date<-as.Date(as.character(MohonkDailyWeather.upload$DATE))
 MohonkDailyWeather.upload$Precip_mm<-MohonkDailyWeather.upload$PRCP_in*25.4
 MohonkDailyWeather.upload$Snow_mm<-MohonkDailyWeather.upload$SNOW_in*25.4
@@ -51,7 +51,7 @@ MohonkDailyWeather<-MohonkDailyWeather.upload[,c("Date","Precip_mm","Snow_mm",
 ENSO_MEI_monthly<-read.csv("data/keep/ENSO_MEI_1979-2020.csv")
 
 #Read in data
-ENSO_monthly<-read.csv("data/ONI_index_monthly.csv")
+ENSO_monthly<-read.csv("data/keep/ONI_index_monthly.csv")
 
 
 ##Upload Mohonk FULL RECORD NOAA National Weather Service Temp and Precip daily data ####   
