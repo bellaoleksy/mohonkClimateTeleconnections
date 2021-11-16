@@ -41,3 +41,6 @@ vignettes/*.pdf
 
 #Exclude any data
 /data
+
+#Ignore DS_Store!
+.DS_Store
