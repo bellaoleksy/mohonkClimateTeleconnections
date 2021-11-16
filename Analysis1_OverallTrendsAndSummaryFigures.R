@@ -1,6 +1,11 @@
-#R script created 20Dec2019 by DCR####
-#Updated 01Feb2020 with IAO and DCR to add figures and analyses for basic trends of all variables
-#Includes key manuscript figures at the bottom
+# Analysis 1 -------------------------------------------------------------------
+
+# We calculated four metrics of lake thermal structure for each profile: surface water temperature (SWT) as the mean temperature from 1-3m; deep water temperature (DWT) as the mean temperature from 10-12m (Figure S4); thermocline depth; and Schmidt stability. Thermocline depth was assigned to the average of the first two depths with a density rate of change over the profile exceeding 0.1 kg m−2 and represents the depth delineating thermal stratification layers (Read et al., 2011). Schmidt stability (J m−2) was the measure of the quantity of work required to overcome thermal density stratification and completely mix the lake (Idso, 1973). 
+
+#We calculated a breakpoint for Schmidt stability each spring using the ‘pettitt.test’ function in the R ‘trend’ package (Pohlert, 2020). We took the median from all annual spring breakpoints as a cutoff for thermal stratification (66 J m−2), and identified the start and end of thermal stratification using this Schmidt stability cutoff (Engelhardt & Kirillin, 2014). Using those days of start and end of stratification, we identified the length of the stratified period, maximum Schmidt stability, and day of peak stratification (Figure S6). We broke each year into multiple time periods matching seasons and stratification phenology throughout the year: 7-day period following ice-off (“post-ice”), between ice-off and stratification onset (“spring mixed-period”), and between stratification onset and turnover (“summer stratified”).
+
+# See manuscript for how we calculated Mixing Action.
+
 
 #Packages####
 if(!require(reshape2)){install.packages("reshape2")};library(reshape2)
