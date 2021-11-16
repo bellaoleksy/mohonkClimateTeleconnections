@@ -216,3 +216,15 @@
     dev.off()  
     par(op)
     
+    
+    #Clean up environment
+    rm(list = ls()[grep("gg.", ls())])
+    rm(list = ls()[grep("axes", ls())])
+    rm(list = ls()[grep("corr", ls())])
+    rm(list = ls()[grep("len", ls())])
+    rm(list = ls()[grep("pca", ls())])
+    rm(list = ls()[grep(".long", ls())])
+    rm(list = ls()[grep("AnnualData.", ls())])
+    rm(list = ls()[grep(".results", ls())])
+    rm(op)
+    

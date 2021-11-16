@@ -268,7 +268,7 @@ senLabels<-data.frame(WaterSeason,labelSen)
               label = c(NA,NA,NA,NA,NA,NA,NA,'-0.03°C/year',"-0.05°C/year"),
               size = 3.5)
 
-ggsave("figures/manuscript/Figure1.AirAndWaterTempTrends.jpg", width=6.6, height=5,units="in")
+# ggsave("figures/manuscript/Figure1.AirAndWaterTempTrends.jpg", width=6.6, height=5,units="in")
 
 panel3x3
 dev.off()
@@ -462,7 +462,7 @@ fig2<-grid.arrange(
 
 fig2
 ##exportPDF
-ggsave("figures/manuscript/Figure2.StabilityFourPanels.pdf", plot=fig2, width=6.6, height=6.9,units="in", dpi=300)
+# ggsave("figures/manuscript/Figure2.StabilityFourPanels.pdf", plot=fig2, width=6.6, height=6.9,units="in", dpi=300)
 
 
 
@@ -613,7 +613,7 @@ gg.2panel.composite<-ggarrange(gg.thermocline.composite+
 print(gg.2panel.composite)  
 
 #Export as a jpg
-ggsave("figures/supplementary/figureS9.StabilityCompositeFigure.jpg",plot=gg.2panel.composite, width = 3.3, height = 4.2, units = "in",dpi = 300)
+# ggsave("figures/supplementary/figureS9.StabilityCompositeFigure.jpg",plot=gg.2panel.composite, width = 3.3, height = 4.2, units = "in",dpi = 300)
 
 
 #Declutter Global Environment
@@ -629,7 +629,6 @@ rm(AnnualData.SensSlopeSummary,
    senLabels, 
    AnnualData.Predicted,
    ThermoclineDepth.composite,
-   s.slope,
    segment_data)
 
 rm(list = ls()[grep("gg.", ls())])

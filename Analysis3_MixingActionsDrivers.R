@@ -527,9 +527,9 @@ TS_dataframe_hux <-
   set_bold(row = 1, col = everywhere, value = TRUE) %>% 
   set_all_borders(TRUE) 
 
-# theme_plain(TS_dataframe_hux) 
-quick_html(TS_dataframe_hux, file = 'figures/tables/timeseries_table.html')
-quick_docx(TS_dataframe_hux, file = 'figures/tables/TableS2_1factormodel.docx')
+
+# quick_html(TS_dataframe_hux, file = 'figures/tables/timeseries_table.html')
+# quick_docx(TS_dataframe_hux, file = 'figures/tables/TableS2_1factormodel.docx')
 #Manualy combine with TableS2_2factormodel.docx outside of R. See below. 
 
 # Mixing Action TS - 2 predictor models--------------------------------------------------------
@@ -584,7 +584,7 @@ TS_dataframe_2factormodels_hux<-
   set_bold(row = 1, col = everywhere, value = TRUE) %>% 
   set_all_borders(TRUE) 
   
-  quick_docx(TS_dataframe_2factormodels_hux, file = 'figures/tables/TableS2_2factormodel.docx')
+  # quick_docx(TS_dataframe_2factormodels_hux, file = 'figures/tables/TableS2_2factormodel.docx')
   
 
 
@@ -628,7 +628,7 @@ two_panel<-AnnualData %>%
 two_panel<-tag_facet(two_panel, open=NULL, close=NULL)
 two_panel
 
-ggsave("figures/manuscript/fig4.MixingAction.png", width=5, height=3,units="in", dpi=300)
+# ggsave("figures/manuscript/fig4.MixingAction.png", width=5, height=3,units="in", dpi=300)
 
 
 
@@ -683,6 +683,19 @@ AnnualDataLong %>%
         legend.position="none",
         panel.spacing=grid::unit(0,"lines"))## squash panels together
 # 
-ggsave("figures/supplementary/figureS8.NAOandENSO_timeseries.jpg", width=6, height=7,units="in", dpi=300)
+# ggsave("figures/supplementary/figureS8.NAOandENSO_timeseries.jpg", width=6, height=7,units="in", dpi=300)
 # ggsave("figures/supplementary/figureS8.NAOandENSO_timeseries.pdf", width=6, height=7,units="in", dpi=300)
+
+
+#Declutter Global Environment
+
+rm(list = ls()[grep("arimaFit.", ls())])
+rm(list = ls()[grep("TS_", ls())])
+rm(list = ls()[grep("two_panel", ls())])
+rm(list = ls()[grep("ENSO_", ls())])  
+rm(list = ls()[grep("GlobalTemp", ls())])  
+rm(list = ls()[grep("NAO_", ls())])   
+rm(list = ls()[grep("Year", ls())])  
+rm(list = ls()[grep("AIC", ls())])   
+rm(list = ls()[grep("coef", ls())])   
 
