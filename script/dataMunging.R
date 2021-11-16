@@ -752,45 +752,36 @@ DailyInterpol.secchi<-DailyInterpol.secchi%>%
   
 
 
-#Clean up environment
-  # rm(AllDays,
-  #    AnnualBreakpoint.method2,
-  #    AnnualBreakpoint.method3,
-  #    AnnualData_airTempPeriods,
-  #    AnnualData_precipPeriods,
-  #    AnnualData_SecchiPeriods,
-  #    AnnualData_volWtMeansPeriods,
-  #    bottom101112.tmp,
-  #    DailyInterpol.airTemp,
-  #    DailyInterpol.precip,
-  #    DailyInterpol.secchi,
-  #    DailyInterpol.secchiPeriods,
-  #    DailyInterpol.volWtMeansPeriods,
-  #    lm,
-  #    lm.deltaSpringMix,
-  #    medianCompositeStability,
-  #    MohonkBathy.volume,
-  #    MohonkDailyWeather.upload,
-  #    MohonkDailyWeatherFull,
-  #    MohonkDailyWeatherFull.upload,
-  #    MohonkDailyWeatherTruncate,
-  #    MohonkIce,
-  #    MohonkIce.upload,
-  #    MohonkIcePost1985,
-  #    MohonkWeeklyProfilesMetric.derivedData,
-  #    MohonkWeeklyProfilesMetric.derivedData.fullYears,
-  #    MohonkWeeklySecchi,
-  #    s.slope,
-  #    temp,
-  #    temp0,
-  #    temp1,
-  #    tempCross,
-  #    tmp.profile,
-  #    top123temp.tmp,
-  #    zoo.temp,
-  #    zoo.tempYearEnd)
-  # 
-  # #Delete all values
+  #Declutter Global Environment
+  rm(AllDays,
+     AnnualBreakpoint.method2,
+     AnnualBreakpoint.method3,
+     AnnualData_airTempPeriods,
+     AnnualData_precipPeriods,
+     AnnualData_SecchiPeriods,
+     AnnualData_volWtMeansPeriods,
+     bottom101112.tmp,
+     medianCompositeStability,
+     MohonkBathy.volume,
+     MohonkDailyWeather.upload,
+     MohonkDailyWeatherFull,
+     MohonkDailyWeatherFull.upload,
+     MohonkDailyWeatherTruncate,
+     MohonkIce,
+     MohonkIce.upload,
+     MohonkIcePost1985,
+     MohonkWeeklyProfilesMetric.derivedData,
+     MohonkWeeklyProfilesMetric.derivedData.fullYears,
+     MohonkWeeklySecchi,
+     s.slope)
+
+  rm(list = ls()[grep("gg.", ls())])
+  rm(list = ls()[grep("temp", ls())])
+  rm(list = ls()[grep("lm", ls())])
+  rm(list = ls()[grep("tmp.", ls())])  
+
+  
+  #Delete all values
   # rm(list = ls.str(mode = 'numeric'))
   # rm(list = ls.str(mode = 'character'))
   
