@@ -155,4 +155,4 @@ names(dt2)
 
 MohonkWeeklyProfilesMetric <- left_join(dt1, dt2, by="Date")
 
-
+rm(dt1, dt2)

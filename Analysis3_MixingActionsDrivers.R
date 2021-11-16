@@ -1,3 +1,5 @@
+##This file includes all the time series models for predicting temporal variability in Mixing Action
+
 #Load libraries
 if(!require(forecast)){install.packages("huxtable")}
 if(!require(forecast)){install.packages("magrittr")}
@@ -26,9 +28,6 @@ library(egg)
 
 # ~ MA , xreg="Year" ------------------------------------------------------
 
-#For this analysis we need to filter our 2018, since that wasn't including in the original GRL submission
-AnnualData<-AnnualData %>%
-  filter(!Year=="2018")
 
 arimaFit.Year<-auto.arima(AnnualData$MixingAction_gigaJday,
                           xreg=c(AnnualData$Year),
@@ -38,9 +37,8 @@ arimaFit.Year<-auto.arima(AnnualData$MixingAction_gigaJday,
                      stationary=TRUE)
 
 #The first argument is the y variable
-#The second is xregression variables. I think you need to do xreg=cbind(x1,x2) for multiple
-#seasonal=FALSE removes seasonal trends, allowdrift=FALSE disallows a drift component (we want to specify that, I think stationary=TRUE is redundant with allowdrift
-
+#The second is xregression variables. You need to do xreg=cbind(x1,x2) for multiple
+#seasonal=FALSE removes seasonal trends, allowdrift=FALSE disallows a drift component 
 
 arimaFit.Year #display the model that was fit
 
@@ -530,9 +528,9 @@ TS_dataframe_hux <-
   set_all_borders(TRUE) 
 
 # theme_plain(TS_dataframe_hux) 
-quick_html(TS_dataframe_hux, file = 'figures/timeseries_table.html')
-# quick_docx(TS_dataframe_hux, file = 'figures/TS_output.docx')
-
+quick_html(TS_dataframe_hux, file = 'figures/tables/timeseries_table.html')
+quick_docx(TS_dataframe_hux, file = 'figures/tables/TableS2_1factormodel.docx')
+#Manualy combine with TableS2_2factormodel.docx outside of R. See below. 
 
 # Mixing Action TS - 2 predictor models--------------------------------------------------------
 
@@ -540,20 +538,11 @@ quick_html(TS_dataframe_hux, file = 'figures/timeseries_table.html')
 
 
 arimaFit.GlobalTempAnomoly.NAO_Spring<-auto.arima(AnnualData$MixingAction_gigaJday,
-                          # xreg=c(AnnualData$Global),
                           xreg=cbind(AnnualData$GlobalTempAnomoly_C,AnnualData$NAO_Spring),
-                          # AnnualData$Year),
                           seasonal=FALSE,allowdrift = FALSE,
                           stationary=TRUE)
 
-#The first argument is the y variable
-#The second is xregression variables. I think you need to do xreg=cbind(x1,x2) for multiple
-#seasonal=FALSE removes seasonal trends, allowdrift=FALSE disallows a drift component (we want to specify that, I think stationary=TRUE is redundant with allowdrift
-
-
 arimaFit.GlobalTempAnomoly.NAO_Spring #display the model that was fit
-
-
 
 #extract aicc value
 GlobalTempAnomoly.NAO_Springaicc<-as.numeric(arimaFit.GlobalTempAnomoly.NAO_Spring$aicc)
@@ -595,98 +584,12 @@ TS_dataframe_2factormodels_hux<-
   set_bold(row = 1, col = everywhere, value = TRUE) %>% 
   set_all_borders(TRUE) 
   
-  # quick_docx(TS_dataframe_2factormodels_hux, file = 'figures/TS_output_2factormodel.docx')
+  quick_docx(TS_dataframe_2factormodels_hux, file = 'figures/tables/TableS2_2factormodel.docx')
   
-
-# Correleation matrices ---------------------------------------------------
-
-#### DO NOT RUN - exploratory  #####
-#   AnnualData_corr<-AnnualData %>%
-#     select(MixingAction_gigaJday, Year, GlobalTempAnomoly_C,
-#            NAO_Spring, NAO_Summer, NAO_StratifiedPeriod,
-#            NAO_SpringMixed, ENSO_Spring, ENSO_Summer)
-#   
-#   # First way
-#   ggpairs(AnnualData_corr, method="pearson") 
-#   
-# #Corrleations  
-#   corr1 <- AnnualData_corr %>%
-#     drop_na() %>%
-#     cor(method="pearson")
-# 
-# #Calculate p-values for correlations  
-#  pmat1 <- AnnualData_corr %>%
-#     drop_na() %>%
-#     cor_pmat()
-# 
-#   #Create informative correlation matrix 
-#   ggcorrplot(corr1, title = "Correlation matrix for mixing action and climate variables",
-#              lab=TRUE, 
-#              p.mat = pmat1, sig.level = .05,
-#              type="upper")
-# 
-# #Dataframe for correlations 
-#   MA_corrs<-data.frame(row=rownames(corr1)[row(corr1)[upper.tri(corr1)]],
-#              col=colnames(corr1)[col(corr1)[upper.tri(corr1)]],
-#              corr=corr1[upper.tri(corr1)]) %>%
-#       #Pull out only the GPP versus predictor relationships
-#       filter(row=="MixingAction_gigaJday") %>%
-#       rename(response=row,
-#              predictor=col)
-# #Make a table of correlations
-#   MA_corrs_hux <- 
-#     hux(MA_corrs) %>% 
-#     arrange(abs(corr)) %>%
-#     add_colnames() %>% 
-#     set_bold(row = 1, col = everywhere, value = TRUE) %>% 
-#     set_all_borders(TRUE) 
-#   
-# quick_docx(MA_corrs_hux, file = 'figures/MixingAction_correlations.docx')
-#   
-#   
-  
-##Only Year, Global Temp, NAO Spring, and NAO_Stratified are correlated.
-##So below is a small correlation matrix including only those variables.
-  # AnnualData_corr_trim<-AnnualData %>%
-  #   select(MixingAction_gigaJday, Year, GlobalTempAnomoly_C,
-  #          NAO_Spring, NAO_StratifiedPeriod)
-  # 
-  # # First way
-  # ggpairs(AnnualData_corr_trim) 
-
-
-# * Exploratory plots ---------------------------------------------------------
-# checkresiduals(arimaFit.Year)
-# checkresiduals(arimaFit.GlobalTempAnomoly)
-# checkresiduals(arimaFit.NAO_Spring)
-# checkresiduals(arimaFit.GlobalTempAnomoly.NAO_Spring)
-# 
-# AnnualData %>%
-#   ggplot(aes(y=MixingAction_gigaJday, x=Year))+
-#   geom_point()+ geom_smooth(method="lm")
-# 
-# AnnualData %>%
-#   ggplot(aes(y=MixingAction_gigaJday, x=GlobalTempAnomoly_C))+
-#   geom_point()+ geom_smooth(method="lm")
-# 
-# AnnualData %>%
-#   ggplot(aes(y=MixingAction_gigaJday, x=NAO_Spring))+
-#   geom_point() + geom_smooth(method="lm")
-# 
-# 
-# AnnualData %>%
-#   ggplot(aes(y=NAO_Spring, x=Year))+
-#   geom_point() + geom_line()
-# 
-
 
 
 # > Export manuscript plot ------------------------------------------------
 
-
-#theme_MS()####
-#!!DCR: I took out base_family="Arial"from theme_base because it does not exist in windows
-#Also, changed all font sizes to 10
 theme_MS <- function () { 
   theme_base(base_size=10) %+replace% 
     theme(
@@ -704,173 +607,6 @@ theme_MS <- function () {
 
 
 AnnualData$fittedMA<-as.numeric(arimaFit.GlobalTempAnomoly.NAO_Spring$fitted)
-
-# ###Two column version
-# AnnualData %>%
-#   ggplot(aes(y=NAO_Spring, x=GlobalTempAnomoly_C))+
-#   geom_point(aes(size=fittedMA,fill=fittedMA), shape=21,color="black")+
-#   #To map color gradient & border at the same time, must choose a shape that respects fill & color (21:25)
-#   scale_fill_viridis()+
-#   scale_size(range = c(0.1,8))+ #Makes the ranges a bit more apparent
-#   theme_MS() + 
-#   coord_cartesian(ylim=c(-0.6,0.6))+
-#   xlim(c(0,1))+
-#   # ylim(c(-0.6,0.6))+
-#   scale_y_continuous(breaks=seq(-0.6,0.3,0.3))+
-#   ylab("Spring NAO index")+
-#   xlab("Global temperature anomaly (°C)")+
-#   #Moves legend to inside of plot
-#   theme(legend.position = c(0.02, 0.89),
-#         legend.justification = c("left", "bottom"),
-#         legend.box.just = "right",
-#         legend.title.align = 0,
-#         legend.direction = "horizontal",
-#         legend.box = "horizontal",
-#         legend.background = element_blank(),
-#         legend.margin = margin(0, 0, 0, 0),
-#         legend.title = element_text(size=10)
-#   )+
-#   geom_hline(yintercept = 0.45)+
-#   guides(
-#     size = guide_legend("Pred. Mixing\nAction (GJ day)"),
-#     fill = guide_legend("Pred. Mixing\nAction (GJ day)"))
-# 
-# ggsave("figures/fig5.SpringNAOversusGTA_MixingAction.png", width=6, height=4,units="in")
-# 
-
-###One column version
-AnnualData %>%
-  ggplot(aes(y=NAO_Spring, x=GlobalTempAnomoly_C))+
-  geom_point(aes(size=fittedMA,fill=fittedMA), shape=21,color="black")+
-  #To map color gradient & border at the same time, must choose a shape that respects fill & color (21:25)
-  scale_fill_viridis(guide=guide_legend(label.position="bottom"))+
-  # scale_size(range = c(0.1,5))+ #Makes the ranges a bit more apparent
-  theme_MS() + 
-  coord_cartesian(ylim=c(-0.6,0.7),
-                  xlim=c(0.0,1.0))+
-  # xlim(c(0,1))+
-  # ylim(c(-0.6,0.8))+
-  scale_y_continuous(breaks=seq(-0.6,0.3,0.3))+
-  ylab("Spring NAO index")+
-  xlab("Global temperature anomaly (°C)")+
-  # Moves legend to inside of plot
-  theme(legend.position = c(0.02, 0.80),
-        legend.justification = c("left", "bottom"),
-        # legend.box.just = "right",
-        # legend.title.align = 0,
-        legend.direction = "horizontal",
-        # legend.box = "horizontal",
-        legend.background = element_blank(),
-        legend.margin = margin(0, 0, 0, 0),
-        legend.title = element_text(size=7),
-        legend.text = element_text(size=7)
-  )+
-  geom_hline(yintercept = 0.45)+
-  guides(
-    size = guide_legend(title="Pred. Mixing Action (GJ day)", title.position="top", nrow=2,byrow=TRUE),
-    fill = guide_legend(title="Pred. Mixing Action (GJ day)", title.position="top", nrow=2, byrow=TRUE))
-
-
-
-
-# ggsave("figures/fig5.SpringNAOversusGTA_MixingAction_1column.png", width=3, height=4,units="in")
-
-
-###One column version - legend bottom left
-AnnualData %>%
-  ggplot(aes(y=NAO_Spring, x=GlobalTempAnomoly_C))+
-  geom_jitter(aes(size=fittedMA,fill=fittedMA), shape=21,color="black", width=0.02)+
-  #To map color gradient & border at the same time, must choose a shape that respects fill & color (21:25)
-  scale_fill_viridis(guide=guide_legend(label.position="bottom"))+
-  # scale_size(range = c(0.1,10))+ #Makes the ranges a bit more apparent
-  theme_MS() + 
-  coord_cartesian(ylim=c(-0.6,0.4),
-                  xlim=c(0.0,1.0))+
-  # xlim(c(0,1))+
-  # ylim(c(-0.6,0.8))+
-  scale_y_continuous(breaks=seq(-0.6,0.3,0.3))+
-  ylab("Spring NAO index")+
-  xlab("Global temperature anomaly (°C)")+
-  # Moves legend to inside of plot
-  theme(legend.position = c(0.02, 0.01),
-        legend.justification = c("left", "bottom"),
-        # legend.box.just = "right",
-        # legend.title.align = 0,
-        legend.direction = "horizontal",
-        # legend.box = "horizontal",
-        legend.background = element_blank(),
-        legend.box.background = element_rect(colour = "black"),
-        legend.margin = margin(1, 1, 1, 1),
-        legend.title = element_text(size=5),
-        legend.text = element_text(size=5)
-  )+
-  # geom_hline(yintercept = 0.45)+
-  guides(
-    size = guide_legend(title="Pred. Mixing Action (GJ day)", title.position="top", nrow=3,byrow=TRUE,
-                        keywidth=0.01, #Next three lines make the legend items a little closer together
-                        keyheight=0.01,
-                        default.unit="pt"),
-    fill = guide_legend(title="Pred. Mixing Action (GJ day)", title.position="top", nrow=3, byrow=TRUE,
-                        keywidth=0.01,
-                        keyheight=0.01,
-                        default.unit="pt"))
-
-
-
-
-# ggsave("figures/PdfsForSubmission/fig5.SpringNAOversusGTA_MixingAction_1column.pdf", width=3, height=4,units="in", dpi=300)
-
-###One column version - legend one column, bottom left
-AnnualData %>%
-  ggplot(aes(y=NAO_Spring, x=GlobalTempAnomoly_C))+
-  geom_jitter(aes(size=fittedMA, fill=fittedMA), shape=21,color="black", width=0.05)+
-  # geom_point(aes(size=fittedMA,fill=fittedMA), shape=21,color="black", width=0.04)+
-  #To map color gradient & border at the same time,
-  #must choose a shape that respects fill & color (21:25)
-  scale_fill_viridis_c(guide = "colourbar")+
-  scale_size(range = c(0.1,5))+ #Makes the ranges a bit more apparent
-  theme_MS() + 
-  coord_cartesian(ylim=c(-0.7,0.4),
-                  xlim=c(0.0,1.0))+
-  # xlim(c(0,1))+
-  # ylim(c(-0.6,0.8))+
-  scale_y_continuous(breaks=seq(-0.6,0.3,0.3))+
-  ylab("Spring NAO index")+
-  xlab("Global temperature anomaly (°C)")+
-  # Moves legend to inside of plot
-  theme(legend.position = c(0.02, 0.01),
-        legend.justification = c("left", "bottom"),
-        # legend.box.just = "right",
-        # legend.title.align = 0,
-        legend.direction = "vertical",
-        # legend.box = "horizontal",
-        legend.background = element_blank(),
-        legend.box.background = element_blank(),
-        legend.margin = margin(1, 1, 1, 1),
-        legend.title = element_text(size=7),
-        legend.text = element_text(size=7)
-  )+
-  # geom_hline(yintercept = 0.45)+
-  guides(
-    size= FALSE,
-    # size = guide_legend(title="Pred. Mixing Action\n(GJ day)",
-    #                     title.position="top", nrow=5,byrow=TRUE,
-    #                     #Next three lines make the legend items a little closer together
-    #                     keywidth=0.01,
-    #                     keyheight=0.01,
-    #                     default.unit="pt"),
-    fill = guide_colourbar(title="Mixing Action\n(GJ day)",
-                        title.position="top", ncol=1, byrow=TRUE,
-                        # keywidth=0.1,
-                        # keyheight=0.01,
-                        default.unit="pt"))
-
-
-
-# ggsave("figures/PdfsForSubmission/fig5.SpringNAOversusGTA_MixingAction_1column_optionB.pdf", width=3, height=4,units="in", dpi=300)
-
-# > Two panel - individual effects -----------------------------
-
 
 
 two_panel<-AnnualData %>%
@@ -892,10 +628,11 @@ two_panel<-AnnualData %>%
 two_panel<-tag_facet(two_panel, open=NULL, close=NULL)
 two_panel
 
-ggsave("figures/fig5.MixingAction_2panel.png", width=5, height=3,units="in", dpi=300)
+ggsave("figures/manuscript/fig4.MixingAction.png", width=5, height=3,units="in", dpi=300)
 
 
-# > Supplemental Figs - TS of teleconnections -----------------------------
+
+# > Figure S8. Teleconnections -----------------------------
 
 
 breaks_fun <- function(y) {
@@ -946,6 +683,6 @@ AnnualDataLong %>%
         legend.position="none",
         panel.spacing=grid::unit(0,"lines"))## squash panels together
 # 
-# ggsave("figures/figS6.NAOandENSO_timeseries.png", width=6, height=7,units="in", dpi=300)
-# ggsave("figures/PdfsForSubmission/figS6.NAOandENSO_timeseries.pdf", width=6, height=7,units="in", dpi=300)
+ggsave("figures/supplementary/figureS8.NAOandENSO_timeseries.jpg", width=6, height=7,units="in", dpi=300)
+# ggsave("figures/supplementary/figureS8.NAOandENSO_timeseries.pdf", width=6, height=7,units="in", dpi=300)
 
