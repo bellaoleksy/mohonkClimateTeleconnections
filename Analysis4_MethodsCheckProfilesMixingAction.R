@@ -1,9 +1,8 @@
-#R script created 15May2020 by DCR####
 #Analysis and figure generation to check methods and for supplemental material
   #*Includes generation of a profile
   #*Analysis of mixing action for open water period
 
-#Figure S3. Comparison of daily average sensor data to manual profiles####
+# Figure S3. Comparison of daily average sensor data to manual profiles --------
 
 ##Upload 2017 data
 MohonkWeeklyProfiles2017<-read.csv("data/2017_MohonkLake_Secchi_Thermistor.csv", fill = TRUE)  
@@ -114,16 +113,17 @@ gg.2017sensormanualcomparison<-
   geom_smooth(method = "lm", se = FALSE,col="blue")+
   geom_abline(slope=1,intercept=0,size=1.15,col="red")
 
-ggsave("figures/supplementary/figureS3.sensorvsmanualcomparison.jpg",
-       plot=gg.2017sensormanualcomparison,
-       width = 3.3, height = 3, units = "in",dpi = 300)
+# ggsave("figures/supplementary/figureS3.sensorvsmanualcomparison.jpg",
+#        plot=gg.2017sensormanualcomparison,
+#        width = 3.3, height = 3, units = "in",dpi = 300)
+
 #**linear regression between the two
 summary(lm(ProfileComparison2017$Temp_degC_sensor~ProfileComparison2017$Temp_degC_manual))
 
 
 
 
-#Figure S4. Select a single profile####
+#Figure S4. Select a single profile --------------------------------------------
 #Profile generation
 #Here I picked 2000-08-10 randomly as high stratification from weekly (not interpolated dataset)
 SingleProfile<-MohonkWeeklyProfilesMetric%>%
@@ -159,7 +159,7 @@ ggsave("figures/supplementary/figureS4.exampleProfile.jpg",plot=gg.singleprofile
 
 
 
-#Figure S6. Single years worth of MA####
+#Figure S6. Single years worth of MA -------------------------------------------
 #with lines indicating start and end of stratifiication and open water period
 year.select<-1985
 gg.annualstabilityPlot<-ggplot(data=DailyInterpol%>%filter(year==year.select),
@@ -182,12 +182,12 @@ gg.annualstabilityPlot<-ggplot(data=DailyInterpol%>%filter(year==year.select),
   ylab(bquote(Schmidt~stability~(J~m^-2)))+
   xlab(bquote(Day~of~year))
 
-ggsave("figures/supplementary/figureS6.AYearOfStability.jpg",plot=gg.annualstabilityPlot, width = 3.3, height = 2.5, units = "in",dpi = 300)
+# ggsave("figures/supplementary/figureS6.AYearOfStability.jpg",plot=gg.annualstabilityPlot, width = 3.3, height = 2.5, units = "in",dpi = 300)
 
 
 
 
-#Figure S7. Mixing Action during full open water season versus stratified period####
+#Figure S7. Mixing Action during full open water season versus stratified period-----
     #*Plot comparison of open water vs. stratified mixing action
 gg.mixingaction.comparison<-ggplot(data=AnnualData,aes(x=MixingAction_gigaJday,
                                                            y=MixingAction.OpenWater_gigaJday))+
@@ -203,9 +203,10 @@ gg.mixingaction.comparison<-ggplot(data=AnnualData,aes(x=MixingAction_gigaJday,
     scale_x_continuous(lim=c(3.15,4.5),breaks=c(3.5,4,4.5))+
     scale_y_continuous(lim=c(3.15,4.5),breaks=c(3.5,4,4.5))
 
-ggsave("figures/supplementary/figureS7.MixingActioncomparison.jpg",
-       plot=gg.mixingaction.comparison,
-       width = 3.3, height = 3.3, units = "in",dpi = 300)
+# ggsave("figures/supplementary/figureS7.MixingActioncomparison.jpg",
+#        plot=gg.mixingaction.comparison,
+#        width = 3.3, height = 3.3, units = "in",dpi = 300)
+
   #**linear regression between the two
   summary(lm(AnnualData$MixingAction.OpenWater_gigaJday~AnnualData$MixingAction_gigaJday))
   min(AnnualData$MixingAction_gigaJday,na.rm=T)
