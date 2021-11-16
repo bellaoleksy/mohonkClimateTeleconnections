@@ -628,12 +628,19 @@ rm(AnnualData.SensSlopeSummary,
    AnnualTemps_noSpringAir,
    senLabels, 
    AnnualData.Predicted,
-   Stability.composite,
-   tmp2.composite,
-   tmp.composite,
-   ThermoclineDepth.composite)
+   ThermoclineDepth.composite,
+   s.slope,
+   segment_data)
 
 rm(list = ls()[grep("gg.", ls())])
 rm(list = ls()[grep("DailyInterpol", ls())])
 rm(list = ls()[grep("temp", ls())])
-
+rm(list = ls()[grep("tmp", ls())])
+rm(list = ls()[grep("Stability", ls())])    
+rm(list = ls()[grep("stability.", ls())])    
+rm(list = ls()[grep("thermocline.", ls())])    
+rm(list = ls()[grep("AnnualBreakpoint", ls())])    
+rm(list = ls()[grep("AnnualData_", ls())])    
+rm(list = ls()[grep("fig", ls())])    
+rm(list = ls()[grep("lm", ls())])    
+rm(list = ls()[grep("panel", ls())])    
