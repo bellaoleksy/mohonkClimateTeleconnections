@@ -1,8 +1,5 @@
-##Mohonk Lake Climate change analysis (MTCC)
-##Analysis 2 - looking at lake trends 
-##Created 07Feb2020 David Richardson (hereafter DCR) 
+## Surface and deep water trend analysis
 
-#Surface water warming analysis####
     #Using conceptual model to examine all possible drivers of summer surface temperature
     #Find interesting surface water variables from conceptual model
     AnnualData.SurfaceWater<-AnnualData%>%
@@ -31,14 +28,10 @@
       facet_wrap(~variable,scales="free")+
       theme_bw()
     
-    #Run PCA for surface temp variables####
+    #Run PCA for surface temp variables ----------------------------------------
     #Drop rows with NA in any column (this would drop 1997, 2014 and 2015)
     #Also remove surface water temp
     
-    #Run PCA with all the predictor variables
-    #pca <- prcomp(AnnualData.SurfaceWater%>%dplyr::select(-SurfaceWaterTemp_Summer_degC)%>%drop_na(),
-    #             center = TRUE,
-    #            scale. = TRUE) 
     #Run PCA with only the correlated variables
     pca.surface <- prcomp(AnnualData.SurfaceWater%>%
                             dplyr::select(AirTemp_Summer_degC,SecchiDepth_Summer_m)%>%
@@ -72,7 +65,8 @@
       mutate(y=seq(21,20.75,by=-0.25),
              x=ifelse(arrow.length>1,0,arrow.length))
     
-    #~~~Figure S11A. Plot the PC1 (reversed) vs. surface water temp for summer with arrows from the principal components on there####
+    # Draw Figure S11A. --------------------------------------------------------------
+    #Plot the PC1 (reversed) vs. surface water temp for summer with arrows from the principal components on there
     gg.surface.summer<-ggplot(data=axesPlusSurfaceWater,
                               aes(x=PC1,y=SurfaceWaterTemp_Summer_degC))+
       geom_point()+
@@ -126,7 +120,7 @@
     #   facet_wrap(~variable,scales="free")+
     #   theme_bw()
 
-    #Runn PCA for deep temp variables####
+    #Run PCA for deep temp variables -------------------------------------------
     #Drop rows with NA in any column (this would drop 1997, 2014 and 2015)
     #Also remove surface water temp
     
@@ -169,7 +163,8 @@
       mutate(y=seq(5.3,4.8,by=-0.25),
              x=0,hjust=ifelse(arrow.length<1,0,1))
 
-    #~~~Figure S11B. Plot the PC1 (reversed) vs.  Deep Water Temp for summer with arrows from the principal components on there####
+    # Draw Figure S11B ---------------------------------------------------------
+    # Plot the PC1 (reversed) vs.  Deep Water Temp for summer with arrows from the principal components on there
     gg.deep.summer<-ggplot(data=axesPlusDeepWater,aes(x=PC1*-1,y=DeepWaterTemp_Summer_degC))+
       geom_point()+
       theme_bw()+
@@ -210,7 +205,7 @@
                          nrow=2)
     print(gg.2panel.pc)  
     
-    #***Export 2 panel figure pc1 plot####
+    #  >> Export 2 panel figure PC1 plot -------------------------------------------
     op <- par(no.readonly = TRUE)
     jpeg("figures/supplementary/figureS11.PanelvsPC1.jpg",
          width = 3.3, height = 5.2,
