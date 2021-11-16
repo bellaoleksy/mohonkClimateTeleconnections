@@ -227,7 +227,7 @@ full.figure<-ggarrange(plotA+
                                        fontface="bold")),
                        ncol=3, nrow=2)
 full.figure
-ggsave("figures/manuscript/Figure3.correlations.png", plot=full.figure, width=6.5, height=5,units="in", dpi=600)
+# ggsave("figures/manuscript/Figure3.correlations.png", plot=full.figure, width=6.5, height=5,units="in", dpi=600)
 
 
 
@@ -309,7 +309,7 @@ data_nest <- mutate(data_nest, model = map(data, cor_fun))
 corr <- select(data_nest, -data) %>% unnest(cols = c(model))
 
 
-########** Export correlation table for supplement#########################
+# Export correlation table for supplement
 
 
 #Column with p-value significance or not
@@ -340,5 +340,12 @@ corr <- mutate(corr, sig = ifelse(p.value <=0.05, "Sig.", "Non Sig."))
     scale_y_discrete(limits = rev(levels(corr$predictorID)))+
     guides(fill = guide_colourbar(barwidth = 1, barheight = 23,
                                   label.theme = element_text(size=10,colour = "black", angle = 0)))
-  ggsave("figures/supplementary/figureS10.CorrelationMatrix.png", width=5, height=6,units="in", dpi=600)
   
+  
+  # ggsave("figures/supplementary/figureS10.CorrelationMatrix.png", width=5, height=6,units="in", dpi=600)
+  
+  
+  #Declutter Global Environment
+  rm(list = ls()[grep("gg.", ls())])
+  rm(list = ls()[grep("plot", ls())])
+  rm(list = ls()[grep("data", ls())])

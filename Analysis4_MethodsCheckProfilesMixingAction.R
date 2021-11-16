@@ -217,4 +217,6 @@ gg.mixingaction.comparison<-ggplot(data=AnnualData,aes(x=MixingAction_gigaJday,
   sd(MA.increase,na.rm=T)
 
   
-  
+  #Declutter Global Environment
+  rm(list = ls()[grep("MohonkWeekly", ls())])
+  rm(list = ls()[grep("gg.", ls())])
