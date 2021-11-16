@@ -1,30 +1,19 @@
 #R script created 20Dec2019 by DCR####
 #Updated 01Feb2020 with IAO and DCR to add figures and analyses for basic trends of all variables
-  #Includes key manuscript figures at the bottom
+#Includes key manuscript figures at the bottom
 
 #Packages####
-if(!require(reshape2)){install.packages("reshape2")}
-if(!require(scales)){install.packages("scales")}
-if(!require(ggthemes)){install.packages("ggthemes")}
-if(!require(ggpubr)){install.packages("ggpubr")}
-if(!require(ggridges)){install.packages("ggridges")}
-if(!require(egg)){install.packages("egg")}
-if(!require(gridExtra)){install.packages("gridExtra")}
-if(!require(huxtable)){install.packages("huxtable")}
-if(!require(officer)){install.packages("officer")}
-if(!require(flextable)){install.packages("flextable")}
+if(!require(reshape2)){install.packages("reshape2")};library(reshape2)
+if(!require(scales)){install.packages("scales")};library(scales) #for pretty_breaks()
+if(!require(ggthemes)){install.packages("ggthemes")};library(ggthemes)
+if(!require(ggpubr)){install.packages("ggpubr")};library(ggpubr)
+if(!require(ggridges)){install.packages("ggridges")};library(ggridges)
+if(!require(egg)){install.packages("egg")};library(egg)
+if(!require(gridExtra)){install.packages("gridExtra")};library(gridExtra)
+if(!require(huxtable)){install.packages("huxtable")};library(huxtable) #Pretty tables
+if(!require(officer)){install.packages("officer")};library(officer) #exporting pretty tables to word
+if(!require(flextable)){install.packages("flextable")};library(flextable) #exporting pretty tables to word
 
-#Load libraries
-library(reshape2)
-library(scales) #for pretty_breaks()
-library(ggthemes)
-library(ggpubr)
-library(ggridges)
-library(egg)
-library(gridExtra)
-library(huxtable) #Pretty tables
-library(officer) #exporting pretty tables to word
-library(flextable) #exporting pretty tables to word
 
 
 #Set theme####
@@ -43,9 +32,15 @@ theme_MS <- function () {
 }
 
 
-####STATS: Annual trends and breakpoint####
+#Extract Mohonk Bathymetry proportons ------------------------------------------
+#Sum up the volume of the lake that we cover
+MohonkBathy.volume%>%filter(UpperDepth_m<=13)%>%summarize(sum=sum(Volume_proportion))
 
-#*Sen slopes using DCR defined function that is drawn from zyp and trend functions####
+
+
+#STATS: Annual trends and breakpoint (Sen-Theil slopes)-------------------------
+
+#*Sen slopes using DCR defined function that is drawn from zyp and trend functions
 #No longer need to impute values or use zyp.sen
 #Deals with NA values
 #Use MTCC.sensSlope(x=AnnualData$Year,y=AnnualData$VARIABLE) 
@@ -54,7 +49,7 @@ theme_MS <- function () {
 #Melts Annual Data into long form using reshape2
 AnnualData.long<-melt(AnnualData,id="Year")
 
-#**Runs Theil Sen's slopes on each variable####
+#**Runs Theil Sen's slopes on each variable
 #Includes summary stats of significant slopes
 AnnualData.SensSlopeSummary<-
   AnnualData.long%>%
@@ -66,10 +61,10 @@ AnnualData.SensSlopeSummary<-
             Sens_n=MTCC.sensSlope(x=Year,y=value)$n)%>%
   mutate(Significance=ifelse(Sens_pval<0.05,"*","NS"))
 
-#**write csv of the sens slopes summary####
+#**write csv of the sens slopes summary
 # write_csv(AnnualData.SensSlopeSummary,"figures/tables/MTCC-TableX-SensSlopesAllVariables.csv")
 
-# Table S1. -----------------------------------------------
+# Table S1. --------------------------------------------------------------------
 
 AnnualData.SensSlopeSummary_hux <- 
   hux(AnnualData.SensSlopeSummary) %>% 
@@ -84,10 +79,11 @@ theme_plain(AnnualData.SensSlopeSummary_hux)
 
 
 
-#*Figure 1 Air surface and deep temperature, with spring post-ice, spring, and summer time periods, 3x3####
-#Plots 3x3 with a common axis for Air, Surface water, Deep water
-####Prepare data for plotting
-#A little complicated because we want to only draw regression lines through trends that are statistically significant at p > 0.05
+# Figure 1 ---------------------------------------------------------------------
+## Air surface and deep temperature, with spring post-ice, spring, and summer time periods, 3x3
+## Plots 3x3 with a common axis for Air, Surface water, Deep water
+## Prepare data for plotting
+## A little complicated because we want to only draw regression lines through trends that are statistically significant at p > 0.05
 AnnualSurfaceWater<-AnnualData %>%
   dplyr::select(Year, SurfaceWaterTemp_Summer_degC, SurfaceWaterTemp_Spring_degC,
                 SurfaceWaterTemp_SpringPostIce_degC) %>%
@@ -99,6 +95,7 @@ AnnualSurfaceWater<-AnnualData %>%
          Temp=value) %>%
   mutate(Variable="surface",
          Water="water")
+
 
 AnnualDeepWater<-AnnualData %>%
   dplyr::select(Year, DeepWaterTemp_Summer_degC, DeepWaterTemp_Spring_degC,
@@ -112,21 +109,6 @@ AnnualDeepWater<-AnnualData %>%
   mutate(Water="water",
          Variable="deep")
 
-AnnualDeepWater_noSpringPostIce<-AnnualData %>%
-  dplyr::select(Year, DeepWaterTemp_Summer_degC, DeepWaterTemp_Spring_degC,
-                DeepWaterTemp_SpringPostIce_degC)%>%
-  rename(Summer=DeepWaterTemp_Summer_degC,
-         Spring=DeepWaterTemp_Spring_degC,
-         SpringPostIce=DeepWaterTemp_SpringPostIce_degC)
-
-AnnualDeepWater_noSpringPostIce$SpringPostIce<-NA
-
-AnnualDeepWater_noSpringPostIce<-AnnualDeepWater_noSpringPostIce%>%
-  melt(id="Year")%>%
-  rename(Season=variable,
-         Temp=value) %>%
-  mutate(Water="water",
-         Variable="deep")
 
 AnnualAir<-AnnualData %>%
   dplyr::select(Year, AirTemp_Summer_degC, AirTemp_Spring_degC,
@@ -140,21 +122,6 @@ AnnualAir<-AnnualData %>%
   mutate(Variable="air",
          Water="air")
 
-AnnualAir_noSpring<-AnnualData %>%
-  dplyr::select(Year, AirTemp_Summer_degC, AirTemp_Spring_degC,
-                AirTemp_SpringPostIce_degC) %>%
-  rename(Summer=AirTemp_Summer_degC,
-         Spring=AirTemp_Spring_degC,
-         SpringPostIce=AirTemp_SpringPostIce_degC) 
-
-AnnualAir_noSpring$Spring<-NA
-
-AnnualAir_noSpring<-AnnualAir_noSpring%>%
-  melt(id="Year")%>%
-  rename(Season=variable,
-         Temp=value) %>%
-  mutate(Variable="air",
-         Water="air")
 
 #Dataframe with all data
 AnnualTemps<-bind_rows(AnnualSurfaceWater,AnnualDeepWater,AnnualAir) %>%
@@ -177,6 +144,34 @@ AnnualTemps$WaterSeason <- factor(AnnualTemps$WaterSeason,
                                            'Spring Post-Ice (deep)','Spring (deep)','Summer (deep)'))
 
 #Dataframe without Spring Air and SpringPostIce Deep values
+AnnualDeepWater_noSpringPostIce<-AnnualData %>%
+  dplyr::select(Year, DeepWaterTemp_Summer_degC, DeepWaterTemp_Spring_degC,
+                DeepWaterTemp_SpringPostIce_degC)%>%
+  rename(Summer=DeepWaterTemp_Summer_degC,
+         Spring=DeepWaterTemp_Spring_degC,
+         SpringPostIce=DeepWaterTemp_SpringPostIce_degC)
+AnnualDeepWater_noSpringPostIce$SpringPostIce<-NA
+AnnualDeepWater_noSpringPostIce<-AnnualDeepWater_noSpringPostIce%>%
+  melt(id="Year")%>%
+  rename(Season=variable,
+         Temp=value) %>%
+  mutate(Water="water",
+         Variable="deep")
+
+AnnualAir_noSpring<-AnnualData %>%
+  dplyr::select(Year, AirTemp_Summer_degC, AirTemp_Spring_degC,
+                AirTemp_SpringPostIce_degC) %>%
+  rename(Summer=AirTemp_Summer_degC,
+         Spring=AirTemp_Spring_degC,
+         SpringPostIce=AirTemp_SpringPostIce_degC) 
+AnnualAir_noSpring$Spring<-NA
+AnnualAir_noSpring<-AnnualAir_noSpring%>%
+  melt(id="Year")%>%
+  rename(Season=variable,
+         Temp=value) %>%
+  mutate(Variable="air",
+         Water="air")
+
 AnnualTemps_noSpringAir<-bind_rows(AnnualSurfaceWater,AnnualDeepWater_noSpringPostIce,AnnualAir_noSpring) %>%
   mutate(WaterSeason = paste(Variable,Season,sep=""))
 AnnualTemps_noSpringAir$Variable <- as.factor(as.character(AnnualTemps_noSpringAir$Variable))
@@ -197,9 +192,7 @@ AnnualTemps_noSpringAir$WaterSeason <- factor(AnnualTemps_noSpringAir$WaterSeaso
                                                        'Spring Post-Ice (deep)','Spring (deep)','Summer (deep)'))
 
 
-TempColors<- c( "#a6611a", "#80cdc1","#018571") 
-
-
+TempColors<- c( "#a6611a", "#80cdc1","#018571") #Air, Surface water, deep water
 
 
 #A function for make different breaks for each panel. 
@@ -218,7 +211,7 @@ panel3x3<-
   geom_smooth(method="lm", se=FALSE, size=0.5, color="grey50")+
   facet_grid(vars(Variable), vars(Season), scales="free_y", margins=FALSE)+
   scale_fill_manual(values=TempColors,
-                     name="Variable")+
+                    name="Variable")+
   ylab(bquote(Temperature~(degree*C)))+
   # coord_cartesian(ylim=c(0,25), xlim=c(1980,2020))+
   scale_y_continuous(breaks = breaks_fun)+
@@ -236,7 +229,7 @@ panel3x3 <- panel3x3 +
 print(panel3x3)
 
 
-##NOT elegant, but how I added sen slope labels
+##Add sen slope labels
   WaterSeason<-c('Spring Post-Ice (air)',
                  'Spring (air)',
                  'Summer (air)',
@@ -261,34 +254,26 @@ senLabels<-data.frame(WaterSeason,labelSen)
   panel3x3+
     geom_text(data = senLabels %>% #First three rows
                 filter(WaterSeason=="Spring Post-Ice (air)"),
-                # filter(Water == "Air Temperature" &
-                #       Season == "Spring Post-Ice"),
                x=1995, y = 18,
               label = c('0.173°C/year',NA,'0.04°C/year',NA,NA,NA,NA,NA,NA),
               size = 3.5)+
     geom_text(data = senLabels %>% #Middle three rows
                 filter(WaterSeason=="Spring Post-Ice (air)"),
-              # filter(Water == "Air Temperature" &
-              #       Season == "Spring Post-Ice"),
               x=1995, y = 18,
               label = c(NA,NA,NA,'0.06°C/year','0.04°C/year','0.05°C/year',NA,NA,NA),
               size = 3.5)+
     geom_text(data = senLabels %>% #Last three rows
                 filter(WaterSeason=="Spring Post-Ice (air)"),
-              # filter(Water == "Air Temperature" &
-              #       Season == "Spring Post-Ice"),
               x=1995, y = 4,
               label = c(NA,NA,NA,NA,NA,NA,NA,'-0.03°C/year',"-0.05°C/year"),
               size = 3.5)
 
-  
-# jpeg("/Users/solomonlab/Desktop/MTCC-FigX-AirAndWaterTempTrends.jpg", width = 6.6, height = 5, units = "in",res = 600)
-# ggsave("/Users/solomonlab/Desktop/MTCC-FigX-AirAndWaterTempTrends.jpg", width=6.6, height=5,units="in")
 ggsave("figures/manuscript/Figure1.AirAndWaterTempTrends.jpg", width=6.6, height=5,units="in")
 
 panel3x3
 dev.off()
 
+#Figure 2 ----------------------------------------------------------------------
 
 #Create yhat for date of stratification onset
 AnnualData.Predicted<-AnnualData%>%
@@ -313,11 +298,10 @@ AnnualData.Predicted<-AnnualData%>%
                                                     dplyr::select(Sens_Slope))+as.numeric(AnnualData.SensSlopeSummary%>%
                                                                                             filter(variable=="MaxStability_Jperm2")%>%
                                                                                             dplyr::select(Sens_Intercept)))
-#Figure 2------
 
-#**Figure 2A. Ridgelines of Schmidt Stability####
+### Figure 2A. Ridgelines of Schmidt Stability ---------------------------------
 
-#**Overlapping ridgelines - subset out everything without 2014
+# Overlapping ridgelines - subset out everything without 2014
 Ridgelines.DF<-DailyInterpol%>%
   dplyr::select(year,dayofyear,stability_Jperm2)%>%
   filter(stability_Jperm2>Stability.cutoff)%>%
@@ -325,7 +309,7 @@ Ridgelines.DF<-DailyInterpol%>%
   filter(year!=2014)%>%
   filter(year!=1997)
 
-#Gridlines for the plot
+# Gridlines for the plot
 segment_data = data.frame(
   x = c(seq(100,300,by=50)),
   xend = c(seq(100,300,by=50)), 
@@ -333,18 +317,20 @@ segment_data = data.frame(
   yend =rep(2017,length(seq(100,300,by=50)))
 )
 
-#**Make them a little pretty
+# Make them a little pretty
 figure.ridgelines<-ggplot()+
   geom_hline(yintercept=c(seq(1985,2017,by=1)),col="light grey")+
   geom_segment(data=segment_data,aes(x=x,y=y,xend=xend,yend=yend),col="light grey")+
-  #geom_vline(xintercept=c(seq(100,300,by=50)),col="light grey")+
   geom_density_ridges_gradient(data=Ridgelines.DF,aes(x=dayofyear,y=year,height=stability_Jperm2,group=year,fill=stat(height)),stat="identity",scale=2)+
   scale_fill_viridis_c(option="C",guide = guide_colorbar(frame.colour = "black",frame.linewidth = 1.25,ticks = TRUE,ticks.colour="white",ticks.linewidth=2))+
   ylab("Year")+
   xlab("Day of Year")+
   theme_bw()+  
   theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),plot.margin=unit(c(2,0.2,2,0.2), "lines"),legend.box.background = element_blank(),plot.background = element_blank(),legend.margin=margin(0,0,0,0),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(colour = "black"),
+        plot.margin=unit(c(2,0.2,2,0.2), "lines"),
+        legend.box.background = element_blank(),plot.background = element_blank(),legend.margin=margin(0,0,0,0),
         legend.box.margin=margin(-10,0,-10,-5),
         panel.border = element_rect(fill=NA, colour = "black", size=1),
         axis.text.x= element_text(color="black"),
@@ -353,26 +339,27 @@ figure.ridgelines<-ggplot()+
   labs(fill=expression(atop("St",paste("(J m"^-2*")"))))+
   scale_y_continuous(limit=c(1985,2019),breaks=c(seq(1985,2015,by=5)))
 
-#**Figure 2B. Phenology of stratification plot####
+### Figure 2B. Phenology of stratification plot --------------------------------
 gg.stratificationPhenology<-ggplot()+
   geom_segment(data=AnnualData,aes(x=Year,xend=Year,y=StartOfStratification_Day,yend=EndOfStratification_Day),col="grey")+
   geom_point(data=AnnualData,aes(x=Year,y=StartOfStratification_Day),shape=21,color="black",fill="#42AB9A",size=2)+
   geom_line(data=AnnualData.Predicted,aes(x=Year,y=StartOfStratification_day_yhat),color="grey50",lty=1)+
   geom_point(data=AnnualData,aes(x=Year,y=EndOfStratification_Day),shape=21,color="black",fill="#42AB9A",size=2)+
   geom_point(data=AnnualData,aes(x=Year,y=DayMaxStability),col="red",shape=1,size=2)+
-  #ylim(320,90)+
   scale_y_reverse(lim=c(320,90),breaks=seq(300,100,by=-50))+
   scale_x_continuous(limit=c(1984,2018),breaks=seq(1985,2015,by=5))+
   theme_bw()+
   theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),panel.border = element_rect(fill=NA, colour = "black", size=1),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(fill=NA, colour = "black", size=1),
         axis.text.x= element_text(color="black"),
         axis.text.y= element_text(color="black"),
         axis.ticks = element_line(color="black"))+
   xlab("Year")+
   ylab(bquote(Day~of~Year))
 
-#**Figure 2C. Length of stratification plot####
+### Figure 2C. Length of stratification plot -----------------------------------
 gg.lengthOfStratification<-ggplot()+
   geom_point(data=AnnualData,aes(x=Year,y=LengthOfStrat_days),shape=21,color="black",fill="#42AB9A",size=2)+
   geom_line(data=AnnualData.Predicted,aes(x=Year,y=LengthOfStratification_day_yhat),color="grey50",lty=1)+
@@ -380,14 +367,16 @@ gg.lengthOfStratification<-ggplot()+
   scale_x_continuous(limit=c(1984,2018),breaks=seq(1985,2015,by=5))+
   theme_bw()+
   theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),panel.border = element_rect(fill=NA, colour = "black", size=1),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(fill=NA, colour = "black", size=1),
         axis.text.x= element_text(color="black"),
         axis.text.y= element_text(color="black"),
         axis.ticks = element_line(color="black"))+
   xlab("Year")+
   ylab(bquote(Length~of~strat.~(days)))
 
-#**Figure 2D. Mixing action solo plot####
+### Figure 2D. Mixing action solo plot -----------------------------------------
 gg.mixingAction<-ggplot()+
   geom_point(data=AnnualData,aes(x=Year,y=MixingAction_gigaJday),shape=21,color="black",fill="#42AB9A",size=2)+
   geom_line(data=AnnualData.Predicted,aes(x=Year,y=MixingAction_gigaJday_yhat),color="grey50",lty=1)+
@@ -395,7 +384,9 @@ gg.mixingAction<-ggplot()+
   scale_x_continuous(limit=c(1984,2018),breaks=seq(1985,2015,by=10))+
   theme_bw()+
   theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),panel.border = element_rect(fill=NA, colour = "black", size=1),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(colour = "black"),
+        panel.border = element_rect(fill=NA, colour = "black", size=1),
         axis.text.x= element_text(color="black"),
         axis.text.y= element_text(color="black"),
         axis.ticks = element_line(color="black"))+
@@ -404,7 +395,7 @@ gg.mixingAction<-ggplot()+
 
 
 
-#*Modify the right panel with panel letters 
+#Modify the right panel with panel letters 
 panelLetter.reverse <- data.frame(
   xpos = c(-Inf),
   ypos =  c(-Inf),
@@ -417,6 +408,7 @@ panelLetter.normal <- data.frame(
   hjustvar = c(-0.5) ,
   vjustvar = c(1.5))
 
+# Pull together right panel (2B, C, D)
 gg.right.panel<-ggarrange(gg.stratificationPhenology+
                             theme(axis.title.x=element_blank(),
                                   axis.text.x=element_blank(),
@@ -453,12 +445,9 @@ gg.right.panel<-ggarrange(gg.stratificationPhenology+
                                      fontface="bold")),
                      nrow=3)
 
-#####Combine 2A-D & export------------ 
+### Combine 2A-D & export ------------------------------------------------------
 
-# jpeg("figures/MTCC-FigX-StabilityFourPanels.jpg", width = 6.6, height = 6.9, units = "in",res = 600)
-# jpeg("figures/fig3.StabilityFourPanels.jpg", width = 6.6, height = 6.9, units = "in",res = 600)
-
-fig3<-grid.arrange(
+fig2<-grid.arrange(
   figure.ridgelines+geom_text(data=panelLetter.normal,aes(x=xpos,
                                                           y=ypos,
                                                           hjust=hjustvar,
@@ -471,13 +460,14 @@ fig3<-grid.arrange(
                         c(1, 2))
 )
 
-fig3
+fig2
 ##exportPDF
-ggsave("figures/manuscript/Figure2.StabilityFourPanels.pdf", plot=fig3, width=6.6, height=6.9,units="in", dpi=300)
+ggsave("figures/manuscript/Figure2.StabilityFourPanels.pdf", plot=fig2, width=6.6, height=6.9,units="in", dpi=300)
 
 
 
-#Figure S9: Composite thermocline depth and stability figure vs. day of year summarizing over all years####
+# Figure S9 --------------------------------------------------------------------
+# Composite thermocline depth and stability figure vs. day of year summarizing over all years
 tmp.composite<-aggregate(DailyInterpol$stability_Jperm2,
                          by=list(DailyInterpol$dayofyear),
                          FUN=quantile,na.rm=T)
@@ -515,10 +505,10 @@ ThermoclineDepth.composite<-data.frame(dayofyear=tmp.composite$Group.1,
                                        NinetyFifth.thermoclineDepth_m_thresh0.1=tmp2.composite[["x"]][,2],
                                        Max.thermoclineDepth_m_thresh0.1=tmp.composite[["x"]][,5])  
 
-#Cutoff at these days, before 75, the median is all 0.5; after 321, there is a linear increase to 1 by about 0.4 per day
-#Day 321 is about the maximum median thermocline depth - probably representing mixing of the top 
+# Cutoff at these days, before 75, the median is all 0.5; after 321, there is a linear increase to 1 by about 0.4 per day
+# Day 321 is about the maximum median thermocline depth - probably representing mixing of the top 
 lo<-75; hi<-321
-#**Plot composite thermocline depth
+# Plot composite thermocline depth
 gg.thermocline.composite<-ggplot()+
   geom_line(data=ThermoclineDepth.composite%>%
               slice(lo:hi),aes(y=Median.thermoclineDepth_m_thresh0.1,x=dayofyear),
@@ -554,7 +544,7 @@ gg.thermocline.composite<-ggplot()+
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "black"))
 
-#**Plot composite stability###
+# Plot composite stability
 #extend range
 lo<-5; hi<-360
 
@@ -579,7 +569,7 @@ gg.stability.composite<-ggplot()+
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "black"))
 
-#*Modify the right panel with panel letters 
+# Modify the right panel with panel letters 
 panelLetter.reverse <- data.frame(
   xpos = c(-Inf),
   ypos =  c(-Inf),
