@@ -459,11 +459,6 @@ NAO_summary <- left_join(NAO_springmean, NAO_summermean, by="Year")
 NAO_summary <- left_join(NAO_summary, NAO_stratifiedperiod, by="Year")
 NAO_summary <- left_join(NAO_summary, NAO_springmixed, by="Year")
 
-rm(NAO_springmean,
-   NAO_stratifiedperiod,
-   NAO_springmixed,
-   NAO_daily,
-   NAO_summermean)
 
 # (4) Summarize seasonal ENSO indices ------------------------------------------
 # We obtained monthly multivariate El Niño/Southern Oscillation (ENSO) indices from the
@@ -575,8 +570,6 @@ ENSO_MEI_summary <- left_join(ENSO_MEI_summary,ENSO_MEI_winter, by="Year")
 
 # Merge with AnnualData by Year
 AnnualData<-left_join(AnnualData,ENSO_MEI_summary,by=c("Year"))
-
-rm(list = ls()[grep("ENSO_", ls())])   
 
 
 # (5) Fetch NOAA annual temperature anomoly ------------------------------------
@@ -764,3 +757,7 @@ DailyInterpol.secchi<-DailyInterpol.secchi%>%
   rm(list = ls()[grep("temp", ls())])
   rm(list = ls()[grep("lm", ls())])
   rm(list = ls()[grep("tmp.", ls())])  
+  rm(list = ls()[grep("NAO_", ls())])  
+  rm(list = ls()[grep("ENSO_", ls())])   
+  
+  
