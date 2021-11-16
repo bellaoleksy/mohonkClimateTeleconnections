@@ -29,7 +29,6 @@ source('Analysis2_LakeTrends.R')
 source('Analysis3_MixingActionDrivers.R')
 
 
-
 #Mixing action and temperature profiles methods check####
 #Includes some response to reviewer concerns which end up in the supplementary materials
 #Figures S3, S4, S6, and S7
