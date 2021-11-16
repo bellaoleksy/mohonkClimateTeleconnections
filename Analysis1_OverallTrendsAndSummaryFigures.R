@@ -616,4 +616,24 @@ print(gg.2panel.composite)
 ggsave("figures/supplementary/figureS9.StabilityCompositeFigure.jpg",plot=gg.2panel.composite, width = 3.3, height = 4.2, units = "in",dpi = 300)
 
 
+#Declutter Global Environment
+rm(AnnualData.SensSlopeSummary,
+   AnnualData.SensSlopeSummary_hux,
+   AnnualSurfaceWater,
+   AnnualDeepWater,
+   AnnualAir,
+   AnnualTemps,
+   AnnualDeepWater_noSpringPostIce,
+   AnnualAir_noSpring,
+   AnnualTemps_noSpringAir,
+   senLabels, 
+   AnnualData.Predicted,
+   Stability.composite,
+   tmp2.composite,
+   tmp.composite,
+   ThermoclineDepth.composite)
+
+rm(list = ls()[grep("gg.", ls())])
+rm(list = ls()[grep("DailyInterpol", ls())])
+rm(list = ls()[grep("temp", ls())])
 
