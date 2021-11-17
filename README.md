@@ -10,36 +10,27 @@ This is a public repository for the code needed to recreate the analysis in [Ole
 ## Contents 
 <pre>
 ├── 000_startHere.R
-├── Analysis1_OverallTrendsAndSummaryFigures.R
-├── Analysis2_LakeTrends.R
-├── Analysis3_MixingActionsDrivers.R
-├── Analysis4_MethodsCheckProfilesMixingAction.R
-├── Analysis5_correlations.R
 ├── README.md
+├── analysis
+│   ├── Analysis1_OverallTrendsAndSummaryFigures.R
+│   ├── Analysis2_LakeTrends.R
+│   ├── Analysis3_MixingActionsDrivers.R
+│   ├── Analysis4_MethodsCheckProfilesMixingAction.R
+│   └── Analysis5_correlations.R
 ├── data
 ├── figures
 │   ├── manuscript
-│   │   ├── Figure0.MohonkMap.png
-│   │   ├── Figure1.AirAndWaterTempTrends.jpg
-│   │   ├── Figure2.StabilityFourPanels.pdf
-│   │   ├── Figure3.correlations.png
-│   │   └── fig4.MixingAction.png
 │   ├── supplementary
-│   │   ├── figureS10.CorrelationMatrix.png
-│   │   ├── figureS11.PanelvsPC1.jpg
-│   │   ├── figureS3.sensorvsmanualcomparison.jpg
-│   │   ├── figureS4.exampleProfile.jpg
-│   │   ├── figureS6.AYearOfStability.jpg
-│   │   ├── figureS7.MixingActioncomparison.jpg
-│   │   ├── figureS8.NAOandENSO_timeseries.jpg
-│   │   └── figureS9.StabilityCompositeFigure.jpg
 │   └── tables
-│       ├── TableS1.SensSlopesAllVariables.docx
-│       ├── TableS2_1factormodel.docx
-│       ├── TableS2_2factormodel.docx
-│       └── timeseries_table.html
 ├── mohonkClimateTeleconnections.Rproj
 ├── renv
+│   ├── activate.R
+│   ├── library
+│   │   └── R-4.0
+│   │       └── x86_64-apple-darwin17.0 [183 entries exceeds filelimit, not opening dir]
+│   ├── local
+│   ├── settings.dcf
+│   └── staging
 ├── renv.lock
 └── script
     ├── dataMunging.R
