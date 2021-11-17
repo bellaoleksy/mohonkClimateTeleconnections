@@ -72,3 +72,5 @@ Other ancillary data used in the analysis is available in the `data` folder.
 
 ## Contact us
 Please direct any inquiries to *bellaoleksy at gmail dot com*
+
+rrtools::add_dependencies_to_description().
