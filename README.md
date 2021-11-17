@@ -1,5 +1,10 @@
 # Climate Change and Teleconnections Amplify Lake Stratification With Differential Local Controls of Surface Water Warming and Deep Water Cooling
 
+<!-- badges: start -->
+[![HitCount](http://hits.dwyl.com/bellaoleksy/mohonkClimateTeleconnections.svg?style=flat-square)](http://hits.dwyl.com/bellaoleksy/mohonkClimateTeleconnections)
+<!-- badges: end -->
+
+
 ## Welcome! :wave: 
 This is a public repository for the code needed to recreate the analysis in [Oleksy &amp; Richardson 2021](https://agupubs-onlinelibrary-wiley-com.libproxy.uwyo.edu/share/6CICWHJVCWHMIUIRAH8G?target=10.1029/2020GL090959) published in Geophysical Research Letters.
 
