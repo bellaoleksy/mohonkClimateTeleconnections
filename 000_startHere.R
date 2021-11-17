@@ -29,7 +29,7 @@ source('script/dataMunging.R')
 
 # Export manuscripts figures 1-2, figure S9, Table S1 from this file
 
-source('Analysis1_OverallTrendsAndSummaryFigures.R')
+source('analysis/Analysis1_OverallTrendsAndSummaryFigures.R')
  
 
 ### Analysis 2 -----------------------------------------------------------------
@@ -44,7 +44,7 @@ source('Analysis1_OverallTrendsAndSummaryFigures.R')
 #we ran principal component analyses using the prcomp function in R (see supplement for details).
 
 #Exports Figure S11.
-source('Analysis2_LakeTrends.R')
+source('analysis/Analysis2_LakeTrends.R')
 
 
 ### Analysis 3  ----------------------------------------------------------------
@@ -56,18 +56,18 @@ source('Analysis2_LakeTrends.R')
 #Model selection was based on the Akaike information criterion (AICc); the top two models were combined into a final model. 
 
 # Exports figure 4 and figure S8 (teleconnection time series)
-source('Analysis3_MixingActionsDrivers.R')
+source('analysis/Analysis3_MixingActionsDrivers.R')
 
 ### Analysis 4  ----------------------------------------------------------------
 #Mixing action and temperature profiles methods check 
 #Includes some response to reviewer concerns which end up in the supplementary materials
 #Figures S3, S4, S6, and S7
-source('Analysis4_MethodsCheckProfilesMixingAction.R')
+source('analysis/Analysis4_MethodsCheckProfilesMixingAction.R')
 
 ### Analysis 5  ----------------------------------------------------------------
 #Correlations between surface water temperature or deep water temperature and
 #several covariates. Includes Figure 3 and Figure S10.
-source('Analysis5_correlations.R')
+source('analysis/Analysis5_correlations.R')
 
 
 
