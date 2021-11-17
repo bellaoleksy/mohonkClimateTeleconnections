@@ -3,7 +3,7 @@
 <!-- badges: start -->
 [![HitCount](http://hits.dwyl.com/bellaoleksy/mohonkClimateTeleconnections.svg?style=flat-square)](http://hits.dwyl.com/bellaoleksy/mohonkClimateTeleconnections)
 [![Paper DOI](https://img.shields.io/badge/Paper-10.1029/2020GL090959-blue.svg)](https://doi.org/10.1029/2020GL090959)
-[![Data DOI](https://img.shields.io/badge/Data-10.6073/pasta/7b67399344129afc63cd57e99e778160-green.svg)](https://doi.org/10.6073/pasta/7b67399344129afc63cd57e99e778160)
+[![Data DOI](https://img.shields.io/badge/Data-10.6073/pasta/7b67399344129afc63cd57e99e778160-informational.svg)](https://doi.org/10.6073/pasta/7b67399344129afc63cd57e99e778160)
 <!-- badges: end -->
 
 
