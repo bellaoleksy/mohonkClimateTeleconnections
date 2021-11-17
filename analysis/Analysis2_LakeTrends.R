@@ -1,3 +1,8 @@
+#==============================================================================#
+# Script created by Isabella Oleksy <bellaoleksy@gmail.com and David Richardson <richardsond@newpaltz.edu>
+# Script created in R version 4.0.5 (2021-03-31)
+#==============================================================================#
+
 ## Surface and deep water trend analysis
 
     #Using conceptual model to examine all possible drivers of summer surface temperature

@@ -1,3 +1,8 @@
+#==============================================================================#
+# Script created by Isabella Oleksy <bellaoleksy@gmail.com and David Richardson <richardsond@newpaltz.edu>
+# Script created in R version 4.0.5 (2021-03-31)
+#==============================================================================#
+
 ##This file includes all the time series models for predicting temporal variability in Mixing Action
 
 #Load libraries

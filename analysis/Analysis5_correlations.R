@@ -1,3 +1,8 @@
+#==============================================================================#
+# Script created by Isabella Oleksy <bellaoleksy@gmail.com and David Richardson <richardsond@newpaltz.edu>
+# Script created in R version 4.0.5 (2021-03-31)
+#==============================================================================#
+
 #Plot 2 rows by 3 columns
 # First row is significant correlations with summer surface water temp
 # Second row is significant correlations with summer deep water temp

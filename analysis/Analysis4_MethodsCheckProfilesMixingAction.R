@@ -1,3 +1,8 @@
+#==============================================================================#
+# Script created by Isabella Oleksy <bellaoleksy@gmail.com and David Richardson <richardsond@newpaltz.edu>
+# Script created in R version 4.0.5 (2021-03-31)
+#==============================================================================#
+
 #Analysis and figure generation to check methods and for supplemental material
   #*Includes generation of a profile
   #*Analysis of mixing action for open water period

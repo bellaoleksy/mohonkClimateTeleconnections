@@ -1,3 +1,9 @@
+#==============================================================================#
+# Script created by Isabella Oleksy <bellaoleksy@gmail.com and David Richardson <richardsond@newpaltz.edu>
+# Script created in R version 4.0.5 (2021-03-31)
+#==============================================================================#
+
+
 # Analysis 1 -------------------------------------------------------------------
 
 # We calculated four metrics of lake thermal structure for each profile: surface water temperature (SWT) as the mean temperature from 1-3m; deep water temperature (DWT) as the mean temperature from 10-12m (Figure S4); thermocline depth; and Schmidt stability. Thermocline depth was assigned to the average of the first two depths with a density rate of change over the profile exceeding 0.1 kg m−2 and represents the depth delineating thermal stratification layers (Read et al., 2011). Schmidt stability (J m−2) was the measure of the quantity of work required to overcome thermal density stratification and completely mix the lake (Idso, 1973). 
